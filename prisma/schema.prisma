@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Dossier {
+  id           Int         @id @default(autoincrement())
+  type         TypeDossier
+  sujet        String      @db.LongText
+  numeroCc     String?
+  numeroDp     String?
+  dateOrdre    DateTime
+  dateDp       DateTime?
+  matPresident Int
+  delai        Int
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  SituationDossier SituationDossier[]
+}
+
+enum TypeDossier {
+  CC
+  DP
+}
+
+model Instance {
+  id               Int                @id @default(autoincrement())
+  libelle          String
+  rang             Int
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  SituationDossier SituationDossier[]
+  membres            Membre[]
+}
+
+model SituationDossier {
+  id          Int       @id @default(autoincrement())
+  dossier     Dossier   @relation(fields: [idDossier], references: [id])
+  idDossier   Int
+  instance    Instance  @relation(fields: [idInstance], references: [id])
+  idInstance  Int
+  dateEnvoi   DateTime?
+  commentaire String    @db.LongText
+}
+
+model Profil {
+  id        Int      @id @default(autoincrement())
+  matricule String 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  membres     Membre[]
+}
+
+model Membre {
+  id         Int      @id @default(autoincrement())
+  profil     Profil   @relation(fields: [idProfil], references: [id])
+  idProfil   Int
+  instance   Instance @relation(fields: [idInstance], references: [id])
+  idInstance Int
+}

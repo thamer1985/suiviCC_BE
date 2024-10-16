@@ -1,0 +1,145 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../node_modules/@prisma-general/client"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL_GENERAL")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model agent {
+  matricule             String           @id @db.VarChar(6)
+  nom_prenom            String?          @default(dbgenerated("()")) @db.VarChar(255)
+  nom_prenom_fr         String?          @db.VarChar(255)
+  mot_pass              String           @db.Char(60)
+  cin                   String?          @db.VarChar(8)
+  direction             String?          @db.VarChar(255)
+  direction_centrale    String?          @db.VarChar(255)
+  mine_division         String?          @db.VarChar(255)
+  service               String?          @db.VarChar(255)
+  fonction              String?          @db.VarChar(255)
+  code_siege            String           @db.VarChar(2)
+  code_section          String           @db.VarChar(5)
+  cod_serv              String?          @db.VarChar(5)
+  adresse               String?          @db.VarChar(255)
+  tel                   String?          @db.VarChar(8)
+  email                 String?          @db.VarChar(100)
+  type_voiture          String?          @db.VarChar(60)
+  matricule_voiture     String?          @db.VarChar(10)
+  etat                  Int              @default(1) @db.TinyInt
+  mot_pass_2            String?          @db.Char(60)
+  expiration_mot_pass_2 DateTime?        @db.Date
+  profil                profil[]
+  sec_token_info        sec_token_info[]
+}
+
+model application {
+  id_application  Int      @id @default(autoincrement())
+  nom_application String   @db.VarChar(45)
+  profil          profil[]
+}
+
+model chapitre {
+  code_chapitre    String        @id @db.VarChar(3)
+  libelle_chapitre String        @db.VarChar(60)
+  ss_chapitre      ss_chapitre[]
+}
+
+model compte_analytique {
+  code_compte_analytique                                            String               @id @db.VarChar(5)
+  libelle_compte_analytique                                         String               @db.VarChar(60)
+  code_ss_chapitre                                                  String               @db.VarChar(4)
+  actif                                                             Boolean              @default(true)
+  ss_chapitre                                                       ss_chapitre          @relation(fields: [code_ss_chapitre], references: [code_ss_chapitre], onDelete: Cascade, map: "fk_ss_chapitre")
+  corresp_93_22_92_corresp_93_22_92_compte_92xxxTocompte_analytique corresp_93_22_92[]   @relation("corresp_93_22_92_compte_92xxxTocompte_analytique")
+  corresp_93_22_92_corresp_93_22_92_compte_93xxxTocompte_analytique corresp_93_22_92?    @relation("corresp_93_22_92_compte_93xxxTocompte_analytique")
+  section_analytique                                                section_analytique[]
+
+  @@index([code_ss_chapitre], map: "fk_ss_chapitre_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model compte_general {
+  code_compte_general   String             @id @db.VarChar(5)
+  taux_ammortissement   Decimal            @db.Decimal(4, 2)
+  design_compte_general String?            @db.VarChar(45)
+  nature_depense        String?            @db.VarChar(2)
+  corresp_93_22_92      corresp_93_22_92[]
+}
+
+model corresp_93_22_92 {
+  compte_93xxx                                                       String             @id @db.VarChar(5)
+  compte_92xxx                                                       String?            @db.VarChar(5)
+  compte_92xx                                                        String?            @db.VarChar(4)
+  compte_22xxx                                                       String?            @db.VarChar(5)
+  compte_general                                                     compte_general?    @relation(fields: [compte_22xxx], references: [code_compte_general], onDelete: Restrict, map: "fk_corresp_93_22_92_compte_22xxx")
+  compte_analytique_corresp_93_22_92_compte_92xxxTocompte_analytique compte_analytique? @relation("corresp_93_22_92_compte_92xxxTocompte_analytique", fields: [compte_92xxx], references: [code_compte_analytique], onDelete: Restrict, map: "fk_corresp_93_22_92_compte_92")
+  compte_analytique_corresp_93_22_92_compte_93xxxTocompte_analytique compte_analytique  @relation("corresp_93_22_92_compte_93xxxTocompte_analytique", fields: [compte_93xxx], references: [code_compte_analytique], map: "fk_corresp_93_22_92_compte_93")
+  ss_chapitre                                                        ss_chapitre?       @relation(fields: [compte_92xx], references: [code_ss_chapitre], onDelete: Restrict, map: "fk_corresp_93_22_92_ss_chapitre")
+
+  @@index([compte_22xxx], map: "fk_corresp_93_22_92_compte_22xxx_idx")
+  @@index([compte_92xxx], map: "fk_corresp_93_22_92_compte_92_idx")
+  @@index([compte_93xxx], map: "fk_corresp_93_22_92_compte_93_idx")
+  @@index([compte_92xx], map: "fk_corresp_93_22_92_ss_chapitre_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model profil {
+  matricule      String      @db.VarChar(6)
+  id_application Int
+  profil         String      @db.VarChar(30)
+  last_access    DateTime?   @db.DateTime(0)
+  agent          agent       @relation(fields: [matricule], references: [matricule], onDelete: Cascade, map: "fk_profil_agent")
+  application    application @relation(fields: [id_application], references: [id_application], onDelete: Cascade, map: "fk_profil_application")
+
+  @@id([matricule, id_application])
+  @@index([id_application], map: "fk_profil_application_idx")
+}
+
+model sec_token_info {
+  id                 BigInt    @id @default(autoincrement())
+  created_by         String?   @db.VarChar(255)
+  created_date       DateTime? @db.DateTime(6)
+  last_modified_by   String?   @db.VarChar(255)
+  last_modified_date DateTime? @db.DateTime(6)
+  access_token       String?   @db.VarChar(800)
+  expired            Boolean   @db.Bit(1)
+  local_ip_address   String?   @db.VarChar(255)
+  refresh_token      String?   @db.VarChar(800)
+  remote_ip_address  String?   @db.VarChar(255)
+  revoked            Boolean   @db.Bit(1)
+  user_agent_text    String?   @db.VarChar(255)
+  user_id            String?   @db.VarChar(6)
+  agent              agent?    @relation(fields: [user_id], references: [matricule], onDelete: Restrict, onUpdate: Restrict, map: "FKgc45x6bhefatk911pqryoce3l")
+
+  @@index([user_id], map: "FKgc45x6bhefatk911pqryoce3l")
+}
+
+model section_analytique {
+  code_siege             String            @db.VarChar(2)
+  code_compte_analytique String            @db.VarChar(5)
+  compte_analytique      compte_analytique @relation(fields: [code_compte_analytique], references: [code_compte_analytique], map: "fk_compte_analytique")
+  siege                  siege             @relation(fields: [code_siege], references: [code_siege], map: "fk_plan_comptable_siege")
+
+  @@id([code_siege, code_compte_analytique])
+  @@index([code_compte_analytique], map: "fk_compte_analytique_idx")
+}
+
+model siege {
+  code_siege         String               @id @db.VarChar(2)
+  libelle_siege      String               @db.VarChar(40)
+  section_analytique section_analytique[]
+}
+
+model ss_chapitre {
+  code_ss_chapitre    String              @id @db.VarChar(4)
+  libelle_ss_chapitre String              @db.VarChar(60)
+  code_chapitre       String              @db.VarChar(3)
+  compte_analytique   compte_analytique[]
+  corresp_93_22_92    corresp_93_22_92[]
+  chapitre            chapitre            @relation(fields: [code_chapitre], references: [code_chapitre], onDelete: Cascade, map: "fk_chapitre")
+
+  @@index([code_chapitre], map: "fk_chapitre_idx")
+}
