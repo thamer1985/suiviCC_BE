@@ -29,6 +29,6 @@ async function bootstrap() {
   // Swagger path: http://localhost:3200/api/docs
   SwaggerModule.setup(`${apiPath}`, app, document); */
   app.use(cookieParser());
-  await app.listen(3001);
+  await app.listen(3002);
 }
 bootstrap();
