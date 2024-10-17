@@ -10,7 +10,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = "mysql://elbekri:bekri100432@10.71.0.24:3306/suivi_cc_dev"
+  url      = env("DATABASE_URL")
 }
 
 model Dossier {
@@ -25,7 +25,7 @@ model Dossier {
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
-  SituationDossier SituationDossier[]
+  Chronologies Chronologie[]
 }
 
 enum TypeDossier {
@@ -33,7 +33,7 @@ enum TypeDossier {
   Depouillement
 }
 
-model SituationDossier {
+model Chronologie {
   id          Int       @id @default(autoincrement())
   dossier     Dossier   @relation(fields: [idDossier], references: [id])
   idDossier   Int
@@ -48,17 +48,14 @@ model Instance {
   id               Int                @id @default(autoincrement())
   libelle          String
   rang             Int
-  //createdAt        DateTime           @default(now())
-  //updatedAt        DateTime           @updatedAt
-  SituationDossier SituationDossier[]
+  Chronologies Chronologie[]
   membres            Membre[]
 }
 
 model Profil { //à remplacer par general.agent
   id        Int      @id @default(autoincrement())
   matricule String 
-  //createdAt DateTime @default(now())
-  //updatedAt DateTime @updatedAt
+
   membres     Membre[]
 }
 

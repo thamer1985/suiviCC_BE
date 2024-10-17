@@ -2,9 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { CreateDossierDto } from './dto/create-dossier.dto';
 import { UpdateDossierDto } from './dto/update-dossier.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { TypeDossier } from '@prisma/client';
 
 @Injectable()
 export class DossierService {
+  
 
   constructor(
     private prismaService: PrismaService
@@ -16,10 +18,28 @@ export class DossierService {
   async findAll() {
     return await this.prismaService.dossier.findMany({
       include:{
-        SituationDossier:true
+        Chronologies:true
       }
     });
   }
+  async findAllByType(type: string) {
+    // Convert the string to the enum type
+    const enumType = TypeDossier[type as keyof typeof TypeDossier]; 
+    
+    if (!enumType) {
+      throw new Error(`Invalid type provided: ${type}`);
+    }
+  
+    return await this.prismaService.dossier.findMany({
+      where: {
+        type: enumType, // Use the converted enum type
+      },
+      include: {
+        Chronologies: true,
+      },
+    });
+  }
+
 
   async findOne(id: number) {
     return await this.prismaService.dossier.findUnique({
@@ -27,7 +47,7 @@ export class DossierService {
         id:id
       },
       include:{
-        SituationDossier:true
+        Chronologies:{include:{instance:true}}
       }
     });
   }

@@ -19,6 +19,10 @@ export class DossierController {
   findAll() {
     return this.dossierService.findAll();
   }
+  @Get('type/:type')
+  findAllByType(@Param('type') type: string) {
+    return this.dossierService.findAllByType(type);
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
