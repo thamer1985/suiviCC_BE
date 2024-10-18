@@ -1,22 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { CreateInstanceDto } from './dto/create-instance.dto';
-import { UpdateInstanceDto } from './dto/update-instance.dto';
+import { Prisma } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class InstanceService {
-  create(createInstanceDto: CreateInstanceDto) {
+  constructor(
+    private prismaService: PrismaService
+  ) {}
+
+  create(createInstanceDto: Prisma.InstanceCreateInput) {
     return 'This action adds a new instance';
   }
 
   findAll() {
-    return `This action returns all instance`;
+    return this.prismaService.instance.findMany();
+
   }
 
   findOne(id: number) {
     return `This action returns a #${id} instance`;
   }
 
-  update(id: number, updateInstanceDto: UpdateInstanceDto) {
+  update(id: number, updateInstanceDto: Prisma.InstanceUpdateInput) {
     return `This action updates a #${id} instance`;
   }
 

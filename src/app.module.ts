@@ -7,9 +7,10 @@ import { AuthModule } from './auth/auth.module';
 import { DossierModule } from './dossier/dossier.module';
 import { ProfilModule } from './profil/profil.module';
 import { InstanceModule } from './instance/instance.module';
+import { AgentModule } from './general/agent/agent.module';
 
 @Module({
-  imports: [PrismaModule, PrismaGeneralModule, AuthModule, DossierModule, ProfilModule, InstanceModule],
+  imports: [PrismaModule, PrismaGeneralModule, AuthModule, DossierModule, ProfilModule, InstanceModule, AgentModule],
   controllers: [AppController],
   providers: [AppService],
 })
