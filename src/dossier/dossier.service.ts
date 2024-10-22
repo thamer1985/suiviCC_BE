@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CreateDossierDto } from './dto/create-dossier.dto';
-import { UpdateDossierDto } from './dto/update-dossier.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { TypeDossier } from '@prisma/client';
+import { Prisma, TypeDossier } from '@prisma/client';
 
 @Injectable()
 export class DossierService {
@@ -11,9 +9,7 @@ export class DossierService {
   constructor(
     private prismaService: PrismaService
   ) {}
-  create(createDossierDto: CreateDossierDto) {
-    return 'This action adds a new dossier';
-  }
+ 
 
   async findAll() {
     return await this.prismaService.dossier.findMany({
@@ -52,7 +48,11 @@ export class DossierService {
     });
   }
 
-  update(id: number, updateDossierDto: UpdateDossierDto) {
+  create(createDossierDto: Prisma.DossierCreateInput) {
+    return this.prismaService.dossier.create({data:createDossierDto});
+  }
+  
+  update(id: number, updateDossierDto: Prisma.DossierUpdateInput) {
     return `This action updates a #${id} dossier`;
   }
 

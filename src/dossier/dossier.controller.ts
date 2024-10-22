@@ -1,18 +1,14 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { DossierService } from './dossier.service';
-import { CreateDossierDto } from './dto/create-dossier.dto';
-import { UpdateDossierDto } from './dto/update-dossier.dto';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
+import { Prisma } from '@prisma/client';
 
 @Controller('dossier')
 export class DossierController {
   constructor(private readonly dossierService: DossierService) {}
 
-  @UseGuards(JwtAuthGuard)
-  @Post()
-  create(@Body() createDossierDto: CreateDossierDto) {
-    return this.dossierService.create(createDossierDto);
-  }
+  // @UseGuards(JwtAuthGuard)
+ 
 
   //@UseGuards(JwtAuthGuard)
   @Get()
@@ -29,8 +25,13 @@ export class DossierController {
     return this.dossierService.findOne(+id);
   }
 
+  @Post()
+  create(@Body() createDossierDto: Prisma.DossierCreateInput) {
+    return this.dossierService.create(createDossierDto);
+  }
+
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDossierDto: UpdateDossierDto) {
+  update(@Param('id') id: string, @Body() updateDossierDto: Prisma.DossierUpdateInput) {
     return this.dossierService.update(+id, updateDossierDto);
   }
 

@@ -23,11 +23,21 @@ model Dossier {
   dateLimiteOffres       DateTime? // Date maintien des offres (spécifique aux dépouillements)
   matPresident String
   nomPrenomPresident String
+  numDami String?
+  importance Importance @default(Normal)
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
   Chronologies Chronologie[]
 }
+
+enum Importance {
+Normal
+Important
+TresImportant
+Vital
+}
+
 
 enum TypeDossier {
   CCharges
@@ -42,13 +52,15 @@ model Chronologie {
   idInstance  Int
   dateEnvoi   DateTime?
   traite  Boolean @default(false)
-  commentaire String    @db.LongText
+  commentaire String
+  dateLimite DateTime
 }
 
 model Instance {
   id               Int                @id @default(autoincrement())
   libelle          String
   rang             Int
+  delai Int
   Chronologies Chronologie[]
   membres            Membre[]
 }
