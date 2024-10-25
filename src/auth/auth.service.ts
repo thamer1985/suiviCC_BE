@@ -9,16 +9,16 @@ import { JwtService } from '@nestjs/jwt';
 import { jwtSecret } from './constants';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { stringify } from 'querystring';
-import { Instance, Profil } from '@prisma/client';
-import { ProfilService } from 'src/profil/profil.service';
+import { Instance } from '@prisma/client';
+import { CadreService } from 'src/cadre/cadre.service';
 const oneDay = 3600 * 1000 * 24;
 @Injectable()
 export class AuthService {
   constructor(
     private prismaGeneralService: PrismaGeneralService,
     private prismaService: PrismaService,
+    private cadreService:CadreService,
     private jwt: JwtService,
-    private profilService: ProfilService,
   ) {}
 
   async login(matricule: string, password: string, res: any) {
@@ -36,7 +36,9 @@ export class AuthService {
       throw new BadRequestException('Incorrect Password');
     }
 
-    const instances = await this.profilService.getInstances(matricule);
+    const instances = await this.cadreService.getInstances(matricule);
+    console.log(instances);
+    
     const token = await this.signToken({
       matricule: user.matricule,
       name: user.nom_prenom,

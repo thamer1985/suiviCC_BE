@@ -23,7 +23,7 @@ export class InstanceController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateInstanceDto: Prisma.InstanceUpdateInput) {
-    return this.instanceService.update(+id, updateInstanceDto);
+    return this.instanceService.patch(+id, updateInstanceDto);
   }
 
   @Delete(':id')

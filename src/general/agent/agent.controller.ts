@@ -5,6 +5,12 @@ import { AgentService } from './agent.service';
 export class AgentController {
   constructor(private readonly agentService: AgentService) {}
 
+
+  @Get()
+  findAll() {
+    return this.agentService.findAll();
+  }
+
   @Get(':matriule')
   findOne(@Param('matriule') matriule: string) {
     return this.agentService.findOne(matriule);

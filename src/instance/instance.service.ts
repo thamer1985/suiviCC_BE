@@ -9,8 +9,9 @@ export class InstanceService {
   ) {}
 
   create(createInstanceDto: Prisma.InstanceCreateInput) {
-    return 'This action adds a new instance';
-  }
+    return this.prismaService.instance.create({
+      data: createInstanceDto
+    })}
 
   findAll() {
     return this.prismaService.instance.findMany();
@@ -18,11 +19,22 @@ export class InstanceService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} instance`;
+    
+    return this.prismaService.instance.findUnique({
+      where: {
+        id: id
+      }
+    })
   }
 
-  update(id: number, updateInstanceDto: Prisma.InstanceUpdateInput) {
-    return `This action updates a #${id} instance`;
+  patch(id: number, updateInstanceDto: Prisma.InstanceUpdateInput) {
+
+    return this.prismaService.instance.update({
+      where: {
+        id: id
+      },
+      data: updateInstanceDto 
+    })
   }
 
   remove(id: number) {

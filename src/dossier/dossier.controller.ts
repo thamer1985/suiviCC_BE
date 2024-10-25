@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { DossierService } from './dossier.service';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
-import { Prisma } from '@prisma/client';
+import { Chronologie, Prisma } from '@prisma/client';
 
 @Controller('dossier')
 export class DossierController {
@@ -31,8 +31,12 @@ export class DossierController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDossierDto: Prisma.DossierUpdateInput) {
-    return this.dossierService.update(+id, updateDossierDto);
+  patch(@Param('id') id: string, @Body() updateDossierDto: Prisma.DossierUpdateInput) {
+    return this.dossierService.patch(+id, updateDossierDto);
+  }
+  @Patch('send/:id')
+  send(@Param('id') id: string, @Body() chronologie: Chronologie) {
+    return this.dossierService.send(+id, chronologie);
   }
 
   @UseGuards(JwtAuthGuard)

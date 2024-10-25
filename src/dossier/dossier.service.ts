@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Prisma, TypeDossier } from '@prisma/client';
+import { Chronologie, Prisma, TypeDossier } from '@prisma/client';
 
 @Injectable()
 export class DossierService {
@@ -52,9 +52,59 @@ export class DossierService {
     return this.prismaService.dossier.create({data:createDossierDto});
   }
   
-  update(id: number, updateDossierDto: Prisma.DossierUpdateInput) {
-    return `This action updates a #${id} dossier`;
+  patch(id: number, updateDossierDto: Prisma.DossierUpdateInput) {
+    console.log(updateDossierDto);
+    
+    return this.prismaService.dossier.update({
+      where:{
+        id:id
+      },
+      data:updateDossierDto
+    });
   }
+  // can Use Patch
+
+  async send(dossierId: number, chronologie: Chronologie) {
+    console.log(chronologie);
+    
+     await this.prismaService.dossier.update({
+      where: {
+        id: dossierId, 
+      },
+      data: {
+        Chronologies: {
+          create: {
+            instance: {
+              connect: {
+                id: chronologie.idInstance, 
+              },
+            },
+            // idInstance: chronologie.id, 
+            dateEnvoi: chronologie.dateEnvoi,
+            traite: false, 
+            commentaire: chronologie.commentaire,
+            dateLimite: chronologie.dateLimite,
+          },
+        },
+      },
+      include: {
+        Chronologies: true,
+        // Instance: true, 
+      },
+    })
+    return await this.prismaService.dossier.findFirst({
+      where: {
+        id: dossierId, 
+      },
+      include: {
+        Chronologies: {
+          include: {
+            instance: true,},
+        },
+      }
+    })
+      
+    }
 
   remove(id: number) {
     return `This action removes a #${id} dossier`;

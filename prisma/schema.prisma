@@ -52,7 +52,7 @@ model Chronologie {
   idInstance  Int
   dateEnvoi   DateTime?
   traite  Boolean @default(false)
-  commentaire String
+  commentaire String?
   dateLimite DateTime
 }
 
@@ -65,17 +65,20 @@ model Instance {
   membres            Membre[]
 }
 
-model Profil { //à remplacer par general.agent
+model Cadre { //à remplacer par general.agent
   id        Int      @id @default(autoincrement())
-  matricule String 
+  MAT_PERS String @db.VarChar(6)
+  NOM_PERS String @db.VarChar(45)
+  NOM_PERS_A String @db.VarChar(45)
+  COD_CLASS String @db.VarChar(2)
 
   membres     Membre[]
 }
 
 model Membre {
   id         Int      @id @default(autoincrement())
-  profil     Profil   @relation(fields: [idProfil], references: [id])
-  idProfil   Int
+  cadre     Cadre   @relation(fields: [idCadre], references: [id])
+  idCadre   Int
   instance   Instance @relation(fields: [idInstance], references: [id])
   idInstance Int
 }
