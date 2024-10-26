@@ -20,6 +20,10 @@ export class CadreController {
   findOne(@Param('id') id: string) {
     return this.cadreService.findOne(+id);
   }
+  @Get('instanceId/:instanceId')
+  getCadresByInstance(@Param('instanceId') instanceId: string) {
+    return this.cadreService.getCadresByInstance(+instanceId);
+  }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCadreDto: Prisma.CadreUpdateInput) {

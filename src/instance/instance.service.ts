@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Membre, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -27,13 +27,40 @@ export class InstanceService {
     })
   }
 
+  // patch(id: number, updateInstanceDto: Prisma.InstanceUpdateInput) {
+  //   const membres=updateInstanceDto.membres;
+  //   console.log(membres);
+    
+  //   return this.prismaService.instance.update({
+  //     where: {
+  //       id: id
+  //     },
+  //     data: updateInstanceDto 
+  //   })
+  // }
   patch(id: number, updateInstanceDto: Prisma.InstanceUpdateInput) {
-
+    const membres=updateInstanceDto.membres as Membre[];
+    const listIds=membres.map(membre => membre.id);
+    console.log(listIds);
+    
     return this.prismaService.instance.update({
       where: {
         id: id
+      },data: {
+        libelle: updateInstanceDto.libelle, // Optional: update other fields if needed
+        rang: updateInstanceDto.rang,
+        delai: updateInstanceDto.delai,
+        membres: {
+          create: listIds.map(_id => ({
+            cadre: {
+              connect: { id: _id }
+            }
+          }))
+        }
       },
-      data: updateInstanceDto 
+      include: {
+        membres: true
+      } 
     })
   }
 

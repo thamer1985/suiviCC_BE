@@ -4,6 +4,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class CadreService {
+
   constructor(
     private prismaService: PrismaService,
   ) {}
@@ -47,4 +48,18 @@ export class CadreService {
       }
     });
   }
+
+  async getCadresByInstance(instanceId: number) {
+
+    return await this.prismaService.cadre.findMany({
+      where: {
+        membres: {
+          some: {
+            idInstance: instanceId
+          }
+        }
+      }
+    });
+  }
+
 }
