@@ -20,8 +20,12 @@ export class DossierController {
     return this.dossierService.findAllByType(type);
   }
   @Get('instance/:instanceId/type/:type')
-  findAllByInsatnceByType(@Param('type') type: string, @Param('instanceId') instanceId: number) {
-    return this.dossierService.findAllByInsatnceByType(type, instanceId);
+  findAllByInstanceByType(@Param('type') type: string, @Param('instanceId') instanceId: string) {
+    return this.dossierService.findAllByInstanceByType(type, +instanceId);
+  }
+  @Get('idCadre/:idCadre/type/:type')
+  getDossiersForCadreGroupedByInstance(@Param('type') type: string, @Param('idCadre') idCadre: string) {
+    return this.dossierService.getDossiersByCadreAndType(+idCadre,type );
   }
 
   @Get(':id')

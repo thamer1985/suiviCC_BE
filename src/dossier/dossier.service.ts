@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Chronologie, Prisma, TypeDossier } from '@prisma/client';
+import { Chronologie, Dossier, Instance, Prisma, TypeDossier } from '@prisma/client';
 
 @Injectable()
 export class DossierService {
@@ -36,7 +36,7 @@ export class DossierService {
     });
   }
 
-  async findAllByInsatnceByType(type: string, instanceId: number) {
+  async findAllByInstanceByType(type: string, instanceId: number) {
      // Convert the string to the enum type
      const enumType = TypeDossier[type as keyof typeof TypeDossier]; 
     
@@ -69,6 +69,57 @@ export class DossierService {
     return dossiers;
      
   }
+
+  async getDossiersByCadreAndType(idCadre: number, typeDossier: string) {
+    const typeDossierEnum = TypeDossier[typeDossier as keyof typeof TypeDossier];
+    
+    if (!typeDossierEnum) {
+      throw new BadRequestException('Invalid typeDossier');
+    }
+    const dossiers = await this.prismaService.dossier.findMany({
+      where: {
+        AND: [
+          { type: typeDossierEnum },
+          {
+            Chronologies: {
+              some: {
+                instance: {
+                  membres: {
+                    some: { idCadre },
+                  },
+                },
+              },
+            },
+          },
+        ],
+      },
+      include: {
+        Chronologies: true,
+      },
+    });
+    // Group dossiers by instance
+    const groupedByInstance = dossiers.reduce((groups, dossier) => {
+      dossier.Chronologies.forEach((chronologie) => {
+        const instanceId = chronologie.idInstance;
+        if (!groups[instanceId]) {
+          groups[instanceId] = {
+            instanceId: chronologie.idInstance,
+            dossiers: [],
+          };
+        }
+        // Only add the dossier once per instance
+        if (!groups[instanceId].dossiers.find(d => d.id === dossier.id)) {
+          if(!chronologie.traite){
+            groups[instanceId].dossiers.push(dossier);
+          }
+        }
+      });
+      return groups;
+    }, {});
+
+    return Object.values(groupedByInstance);
+  }
+
   
 
 
@@ -98,10 +149,25 @@ export class DossierService {
     });
   }
   // can Use Patch
+  async updateLastChronologie(dossierId: number) {
+    const lastChronologie = await this.prismaService.chronologie.findFirst({
+      where: { idDossier: dossierId },
+      orderBy: { dateEnvoi: 'desc' }, 
+    });
+    
+    if (lastChronologie) {
+      await this.prismaService.chronologie.update({
+        where: { id: lastChronologie.id },
+        data: { traite: true },
+      });
+    }
 
+    return lastChronologie;
+  }
   async send(dossierId: number, chronologie: Chronologie) {
     console.log(chronologie);
-    
+    await this.updateLastChronologie(dossierId);
+
      await this.prismaService.dossier.update({
       where: {
         id: dossierId, 
