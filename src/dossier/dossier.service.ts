@@ -4,7 +4,7 @@ import { Chronologie, Prisma, TypeDossier } from '@prisma/client';
 
 @Injectable()
 export class DossierService {
-  
+ 
 
   constructor(
     private prismaService: PrismaService
@@ -35,6 +35,41 @@ export class DossierService {
       },
     });
   }
+
+  async findAllByInsatnceByType(type: string, instanceId: number) {
+     // Convert the string to the enum type
+     const enumType = TypeDossier[type as keyof typeof TypeDossier]; 
+    
+     if (!enumType) {
+       throw new Error(`Invalid type provided: ${type}`);
+     }
+   
+     const dossiers = await this.prismaService.instance.findUnique({
+      where: {
+        id: Number(instanceId)
+      },
+      include: {
+        Chronologies: {
+          where:{
+            dossier: {
+                type:enumType
+            }
+          },
+          include: {
+            dossier:true
+          }
+        }
+      }
+    }).then(instance => 
+      instance?.Chronologies
+        .map(chronologie => chronologie.dossier)
+        .filter(dossier => dossier !== null)
+    );
+
+    return dossiers;
+     
+  }
+  
 
 
   async findOne(id: number) {
