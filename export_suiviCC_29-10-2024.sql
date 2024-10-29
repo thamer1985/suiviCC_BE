@@ -653,15 +653,20 @@ CREATE TABLE IF NOT EXISTS `chronologie` (
   CONSTRAINT `Chronologie_idInstance_fkey` FOREIGN KEY (`idInstance`) REFERENCES `instance` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table suivi_cc_dev.chronologie: ~7 rows (approximately)
+-- Dumping data for table suivi_cc_dev.chronologie: ~11 rows (approximately)
 INSERT INTO `chronologie` (`id`, `idDossier`, `idInstance`, `dateEnvoi`, `traite`, `commentaire`, `dateLimite`) VALUES
 	(2, 4, 2, '2024-10-16 10:02:09.000', 0, 'في طور الدرس', '2024-10-30 09:45:13.000'),
-	(4, 5, 3, '2024-10-18 07:39:02.000', 1, 'إعداد مطلب شراء', '2024-10-30 09:45:13.000'),
+	(4, 5, 3, '2024-10-18 07:39:02.000', 0, 'إعداد مطلب شراء', '2024-10-30 09:45:13.000'),
 	(5, 5, 1, '2024-10-19 07:40:53.000', 0, 'للإحالة للرقابة', '2024-10-30 09:45:13.000'),
-	(52, 16, 3, '2024-10-24 07:23:31.212', 0, 'comment', '2024-11-18 07:23:13.854'),
-	(53, 17, 4, '2024-10-24 07:38:25.379', 0, NULL, '2024-11-18 23:00:00.000'),
-	(58, 3, 1, '2024-10-24 09:34:51.958', 0, NULL, '2024-11-23 09:34:51.230'),
-	(59, 3, 3, '2024-10-24 09:35:24.621', 0, NULL, '2024-11-18 09:35:24.030');
+	(52, 16, 3, '2024-10-24 07:23:31.212', 1, 'comment', '2024-11-18 07:23:13.854'),
+	(53, 17, 4, '2024-10-24 07:38:25.379', 1, NULL, '2024-11-18 23:00:00.000'),
+	(58, 3, 1, '2024-10-24 09:34:51.958', 1, NULL, '2024-11-23 09:34:51.230'),
+	(59, 3, 1, '2024-10-24 09:35:24.621', 0, NULL, '2024-11-18 09:35:24.030'),
+	(60, 16, 1, '2024-10-28 10:42:10.538', 1, NULL, '2024-11-26 10:42:09.346'),
+	(61, 16, 3, '2024-10-28 11:03:02.950', 0, NULL, '2024-11-22 11:03:00.830'),
+	(62, 17, 1, '2024-10-28 11:15:56.260', 1, NULL, '2024-11-26 11:15:54.693'),
+	(63, 17, 3, '2024-10-28 11:16:36.452', 0, NULL, '2024-11-22 11:16:35.868'),
+	(64, 18, 1, '2024-10-28 11:55:31.493', 0, NULL, '2024-11-26 11:55:30.725');
 
 -- Dumping structure for table suivi_cc_dev.dossier
 DROP TABLE IF EXISTS `dossier`;
@@ -686,7 +691,7 @@ CREATE TABLE IF NOT EXISTS `dossier` (
 INSERT INTO `dossier` (`id`, `type`, `sujet`, `matPresident`, `createdAt`, `updatedAt`, `dateLettre`, `dateLimite`, `dateLimiteOffres`, `numeroDossier`, `nomPrenomPresident`, `importance`, `numDami`) VALUES
 	(3, 'CCharges', 'إقتناء مولد كهربائي', '095358', '2024-10-16 14:14:08.000', '2024-10-16 14:14:09.000', '2024-10-10 14:14:10.000', '2024-11-16 14:14:17.000', '1970-01-01 00:00:00.000', 'S3.3245', 'عبدالرزاق صويلح', 'Important', NULL),
 	(4, 'Depouillement', 'إقتناء مواد مكتبية', '195379', '2024-10-16 14:14:08.000', '2024-10-16 14:14:09.000', '2024-10-10 14:14:10.000', '2024-11-16 14:14:17.000', '1970-01-01 00:00:00.000', NULL, 'ثامر رضواني	', 'Normal', NULL),
-	(5, 'CCharges', 'acquistion de voitures', '095919', '2024-10-19 07:34:58.000', '2024-10-19 07:35:00.000', '2024-10-01 07:35:04.000', '2024-10-31 07:35:13.000', NULL, NULL, 'علي شادو', 'Normal', NULL),
+	(5, 'Depouillement', 'إقتناء سيارات', '095919', '2024-10-19 07:34:58.000', '2024-10-19 07:35:00.000', '2024-10-01 07:35:04.000', '2024-10-31 07:35:13.000', '1970-01-01 00:00:00.000', NULL, 'علي شادو', 'Normal', NULL),
 	(6, 'CCharges', 'الموضوع', '100432', '2024-10-22 08:24:33.514', '2024-10-22 08:24:33.514', '2024-10-06 23:00:00.000', '2024-10-21 23:00:00.000', NULL, NULL, 'محمد الطيب البكري', 'Normal', NULL),
 	(7, 'CCharges', 'dazdazd', '195379', '2024-10-22 08:27:45.322', '2024-10-22 08:27:45.322', '2024-10-19 23:00:00.000', '2024-10-08 23:00:00.000', '1970-01-01 00:00:00.000', 'S3.546', 'ثامر رضواني', 'TresImportant', '87965'),
 	(8, 'CCharges', 'test2', '100432', '2024-10-23 08:11:00.476', '2024-10-23 08:11:00.476', '2024-10-15 23:00:00.000', '2024-10-29 23:00:00.000', NULL, '', 'محمد الطيب البكري', 'Important', NULL),
@@ -697,7 +702,8 @@ INSERT INTO `dossier` (`id`, `type`, `sujet`, `matPresident`, `createdAt`, `upda
 	(14, 'CCharges', 'sujet', '195400', '2024-10-23 08:49:09.031', '2024-10-23 08:49:09.031', '2024-09-30 23:00:00.000', '2024-10-06 23:00:00.000', NULL, NULL, 'وليد عمري', 'Normal', NULL),
 	(15, 'CCharges', 'sujet', '100432', '2024-10-24 07:21:39.984', '2024-10-24 07:21:39.984', '2024-10-14 23:00:00.000', '2024-10-13 23:00:00.000', NULL, NULL, 'محمد الطيب البكري', 'Important', NULL),
 	(16, 'Depouillement', 'AO4', '195379', '2024-10-24 07:23:05.614', '2024-10-24 07:23:05.614', '2024-10-07 23:00:00.000', '2024-10-19 23:00:00.000', '2024-10-19 23:00:00.000', NULL, 'ثامر رضواني', 'Vital', NULL),
-	(17, 'CCharges', 'CC1', '195379', '2024-10-24 07:37:07.427', '2024-10-24 07:37:07.427', '2024-10-08 23:00:00.000', '2024-10-14 23:00:00.000', NULL, NULL, 'ثامر رضواني', 'Important', NULL);
+	(17, 'CCharges', 'CC1', '195379', '2024-10-24 07:37:07.427', '2024-10-24 07:37:07.427', '2024-10-08 23:00:00.000', '2024-10-14 23:00:00.000', NULL, NULL, 'ثامر رضواني', 'Important', NULL),
+	(18, 'CCharges', 'test123', '079514', '2024-10-28 11:55:15.036', '2024-10-28 11:55:15.036', '2024-10-07 23:00:00.000', '2024-10-12 23:00:00.000', NULL, NULL, 'قيس خنشوش', 'TresImportant', '5462');
 
 -- Dumping structure for table suivi_cc_dev.instance
 DROP TABLE IF EXISTS `instance`;
@@ -730,7 +736,7 @@ CREATE TABLE IF NOT EXISTS `membre` (
   CONSTRAINT `Membre_idInstance_fkey` FOREIGN KEY (`idInstance`) REFERENCES `instance` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table suivi_cc_dev.membre: ~3 rows (approximately)
+-- Dumping data for table suivi_cc_dev.membre: ~42 rows (approximately)
 INSERT INTO `membre` (`id`, `idInstance`, `idCadre`) VALUES
 	(4, 1, 514),
 	(5, 1, 5),
@@ -772,7 +778,10 @@ INSERT INTO `membre` (`id`, `idInstance`, `idCadre`) VALUES
 	(41, 2, 2),
 	(42, 2, 40),
 	(43, 2, 22),
-	(44, 2, 2);
+	(44, 2, 2),
+	(45, 3, 514),
+	(46, 2, 514),
+	(47, 4, 514);
 
 -- Dumping structure for table suivi_cc_dev._prisma_migrations
 DROP TABLE IF EXISTS `_prisma_migrations`;
