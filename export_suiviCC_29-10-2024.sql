@@ -653,7 +653,7 @@ CREATE TABLE IF NOT EXISTS `chronologie` (
   CONSTRAINT `Chronologie_idInstance_fkey` FOREIGN KEY (`idInstance`) REFERENCES `instance` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table suivi_cc_dev.chronologie: ~11 rows (approximately)
+-- Dumping data for table suivi_cc_dev.chronologie: ~12 rows (approximately)
 INSERT INTO `chronologie` (`id`, `idDossier`, `idInstance`, `dateEnvoi`, `traite`, `commentaire`, `dateLimite`) VALUES
 	(2, 4, 2, '2024-10-16 10:02:09.000', 0, 'في طور الدرس', '2024-10-30 09:45:13.000'),
 	(4, 5, 3, '2024-10-18 07:39:02.000', 0, 'إعداد مطلب شراء', '2024-10-30 09:45:13.000'),
@@ -687,7 +687,7 @@ CREATE TABLE IF NOT EXISTS `dossier` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table suivi_cc_dev.dossier: ~14 rows (approximately)
+-- Dumping data for table suivi_cc_dev.dossier: ~15 rows (approximately)
 INSERT INTO `dossier` (`id`, `type`, `sujet`, `matPresident`, `createdAt`, `updatedAt`, `dateLettre`, `dateLimite`, `dateLimiteOffres`, `numeroDossier`, `nomPrenomPresident`, `importance`, `numDami`) VALUES
 	(3, 'CCharges', 'إقتناء مولد كهربائي', '095358', '2024-10-16 14:14:08.000', '2024-10-16 14:14:09.000', '2024-10-10 14:14:10.000', '2024-11-16 14:14:17.000', '1970-01-01 00:00:00.000', 'S3.3245', 'عبدالرزاق صويلح', 'Important', NULL),
 	(4, 'Depouillement', 'إقتناء مواد مكتبية', '195379', '2024-10-16 14:14:08.000', '2024-10-16 14:14:09.000', '2024-10-10 14:14:10.000', '2024-11-16 14:14:17.000', '1970-01-01 00:00:00.000', NULL, 'ثامر رضواني	', 'Normal', NULL),
@@ -736,7 +736,7 @@ CREATE TABLE IF NOT EXISTS `membre` (
   CONSTRAINT `Membre_idInstance_fkey` FOREIGN KEY (`idInstance`) REFERENCES `instance` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table suivi_cc_dev.membre: ~42 rows (approximately)
+-- Dumping data for table suivi_cc_dev.membre: ~44 rows (approximately)
 INSERT INTO `membre` (`id`, `idInstance`, `idCadre`) VALUES
 	(4, 1, 514),
 	(5, 1, 5),
@@ -782,38 +782,6 @@ INSERT INTO `membre` (`id`, `idInstance`, `idCadre`) VALUES
 	(45, 3, 514),
 	(46, 2, 514),
 	(47, 4, 514);
-
--- Dumping structure for table suivi_cc_dev._prisma_migrations
-DROP TABLE IF EXISTS `_prisma_migrations`;
-CREATE TABLE IF NOT EXISTS `_prisma_migrations` (
-  `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `checksum` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `finished_at` datetime(3) DEFAULT NULL,
-  `migration_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `logs` text COLLATE utf8mb4_unicode_ci,
-  `rolled_back_at` datetime(3) DEFAULT NULL,
-  `started_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `applied_steps_count` int unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Dumping data for table suivi_cc_dev._prisma_migrations: ~15 rows (approximately)
-INSERT INTO `_prisma_migrations` (`id`, `checksum`, `finished_at`, `migration_name`, `logs`, `rolled_back_at`, `started_at`, `applied_steps_count`) VALUES
-	('03cf9376-c32b-4874-b385-db92057ee4c2', 'd9322575005ec20eca71c39043ddee33662e7c45ebc2e72b3055b77b9982b139', '2024-10-08 08:50:18.171', '20241008085018_change_matricule_type_to_string', NULL, NULL, '2024-10-08 08:50:18.041', 1),
-	('3613c7a3-c20b-4468-a163-8d8c31b5a54b', 'd9322575005ec20eca71c39043ddee33662e7c45ebc2e72b3055b77b9982b139', '2024-10-18 08:57:15.855', '20241008085018_change_matricule_type_to_string', NULL, NULL, '2024-10-18 08:57:15.799', 1),
-	('38fbb1fa-3127-49a7-b833-d3e5926d5b2d', '87af23887109d4d7db1ad66fb19c99aa2325ba362ad2d9982b233c02892859e5', '2024-10-16 13:04:07.947', '20241016130407_db_structure_update', NULL, NULL, '2024-10-16 13:04:07.705', 1),
-	('4e126283-4edf-498a-8061-07246498e9d4', 'dd22c891f6fd65c36efc2676fac52e815d9de5dea1bceddd02c64e0f1cf8e5d4', '2024-10-18 08:57:15.796', '20241007105315_change_table_agent_to_membre', NULL, NULL, '2024-10-18 08:57:15.548', 1),
-	('7f0162ea-ddb5-45eb-a181-ae7475bd6544', '30bea63371d0704ef5514ed67c82620ec509bba212fcfe846feb3794b0563d59', '2024-10-18 08:57:16.143', '20241017082922_change_table_name_from_situation_dossier_to_chronologie', NULL, NULL, '2024-10-18 08:57:15.966', 1),
-	('995d45df-77f5-4ee4-80a2-e87bb80d3600', '83d5c4dd5628b1ad88cf97c3d19c19100314c5a004b45b1186fc96b6422cf638', '2024-10-07 10:49:36.733', '20241007104936_init', NULL, NULL, '2024-10-07 10:49:36.485', 1),
-	('9d0233af-c1da-4a5c-8394-e516e67d48d6', '0065e4cd34aafa56e10ce43cf469a780d74f656a4a79fa85bf30edb9fd6f800a', '2024-10-22 08:43:59.252', '20241022084359_add_delai_num_dami_importance_date_limite_in_instance_dosssier_chronologie', NULL, NULL, '2024-10-22 08:43:59.028', 1),
-	('a74aa300-398c-4126-9f87-31cc18d345a2', '9ee6ac29d1887fc8621ac004bbbcf997c13421340cecf5d4b8cf776e31035788', '2024-10-23 13:05:33.497', '20241023130533_commentaire_in_chronologie_is_nullable', NULL, NULL, '2024-10-23 13:05:33.370', 1),
-	('a8c9f9fb-026f-4ad7-85f2-c613b7b2666f', '30bea63371d0704ef5514ed67c82620ec509bba212fcfe846feb3794b0563d59', '2024-10-17 08:29:22.628', '20241017082922_change_table_name_from_situation_dossier_to_chronologie', NULL, NULL, '2024-10-17 08:29:22.494', 1),
-	('a96a810b-2b90-4730-bfb1-31074153bef6', '17dd2bf3e9fcfc6d753308ee1c8bd2c181a94663aab089002e7e9196780bb77d', '2024-10-18 08:57:41.948', '20241018085741_add_nom_presnom_president_in_dossier', NULL, NULL, '2024-10-18 08:57:41.904', 1),
-	('b8d952a0-c4dd-4d41-9a26-45ea18f89f7a', 'cb733d197212c7c26e9edc7e320c2f04dbfa2a92c213027f95a340ff694740d6', '2024-10-25 09:02:10.968', '20241025090210_add_table_cadre', NULL, NULL, '2024-10-25 09:02:10.798', 1),
-	('d1a2cbc0-90e9-48c0-a34d-565de7372f9d', '83d5c4dd5628b1ad88cf97c3d19c19100314c5a004b45b1186fc96b6422cf638', '2024-10-18 08:57:15.545', '20241007104936_init', NULL, NULL, '2024-10-18 08:57:15.140', 1),
-	('e453a685-a3ce-46bf-8243-e67841fb11fc', '553ffa792cc31846cbb05ce047d74d5516eea21db81168dc6db9927cf6fbb700', '2024-10-18 08:57:15.964', '20241016130407_db_structure_update', NULL, NULL, '2024-10-18 08:57:15.858', 1),
-	('ed44feab-15d2-4b61-83cb-7e4f6c184e40', '114a760eb5f854d255d1846a783980dda7c63dec94c821bf7aa0f9b832239f26', '2024-10-22 08:46:48.599', '20241022084648_remove_nullable_fields', NULL, NULL, '2024-10-22 08:46:48.404', 1),
-	('f9e50e1a-f8fa-4dde-8246-171ecf8a17bd', 'dd22c891f6fd65c36efc2676fac52e815d9de5dea1bceddd02c64e0f1cf8e5d4', '2024-10-07 10:53:15.973', '20241007105315_change_table_agent_to_membre', NULL, NULL, '2024-10-07 10:53:15.862', 1);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
