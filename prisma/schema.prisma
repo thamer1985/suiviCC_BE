@@ -81,4 +81,5 @@ model Membre {
   idCadre   Int
   instance   Instance @relation(fields: [idInstance], references: [id])
   idInstance Int
+  @@unique([idCadre, idInstance])
 }

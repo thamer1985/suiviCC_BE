@@ -38,32 +38,69 @@ export class InstanceService {
   //     data: updateInstanceDto 
   //   })
   // }
-  patch(id: number, updateInstanceDto: Prisma.InstanceUpdateInput) {
-    const membres=updateInstanceDto.membres as Membre[];
-    const listIds=membres.map(membre => membre.id);
-    console.log(listIds);
+  // patch(id: number, updateInstanceDto: Prisma.InstanceUpdateInput) {
+  //   const membres=updateInstanceDto.membres as Membre[];
+  //   const listIds=membres.map(membre => membre.id);
+  //   console.log(listIds);
     
+  //   return this.prismaService.instance.update({
+  //     where: {
+  //       id: id
+  //     },data: {
+  //       libelle: updateInstanceDto.libelle, // Optional: update other fields if needed
+  //       rang: updateInstanceDto.rang,
+  //       delai: updateInstanceDto.delai,
+  //       membres: {
+  //         create: listIds.map(_id => ({
+  //           cadre: {
+  //             connect: { id: _id }
+  //           }
+  //         }))
+  //       }
+  //     },
+  //     include: {
+  //       membres: true
+  //     } 
+  //   })
+  // }
+
+
+  async patch(id: number, updateInstanceDto: Prisma.InstanceUpdateInput) {
+    const membres = updateInstanceDto.membres as Membre[];
+    const listIds = membres.map(membre => membre.id);
+    console.log(listIds);
+  
     return this.prismaService.instance.update({
       where: {
         id: id
-      },data: {
+      },
+      data: {
         libelle: updateInstanceDto.libelle, // Optional: update other fields if needed
         rang: updateInstanceDto.rang,
         delai: updateInstanceDto.delai,
         membres: {
-          create: listIds.map(_id => ({
-            cadre: {
-              connect: { id: _id }
+          // Connect existing membres or create new ones
+          connectOrCreate: listIds.map(_id => ({
+            where: {
+              idCadre_idInstance: {
+                idCadre: _id,
+                idInstance: id
+              }
+            },
+            create: {
+              cadre: {
+                connect: { id: _id }
+              }
             }
           }))
         }
       },
       include: {
         membres: true
-      } 
-    })
+      }
+    });
   }
-
+  
   remove(id: number) {
     return `This action removes a #${id} instance`;
   }
