@@ -46,6 +46,7 @@ export class DossierController {
   patch(@Param('id') id: string, @Body() updateDossierDto: Prisma.DossierUpdateInput) {
     return this.dossierService.patch(+id, updateDossierDto);
   }
+
   @Patch('send/:id')
   send(@Param('id') id: string, @Body() chronologie: Chronologie) {
     return this.dossierService.send(+id, chronologie);

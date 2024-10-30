@@ -26,6 +26,11 @@ export class InstanceController {
     return this.instanceService.patch(+id, updateInstanceDto);
   }
 
+  @Get('idInstance/:idInstance/idCadre/:idCadre')
+  removeMemberFromInstance(@Param('idInstance') idInstance: string, @Param('idCadre') idCadre: string) {
+    return this.instanceService.removeMemberFromInstance(+idInstance, +idCadre);
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.instanceService.remove(+id);

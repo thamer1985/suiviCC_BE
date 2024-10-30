@@ -100,6 +100,29 @@ export class InstanceService {
       }
     });
   }
+
+
+
+  async removeMemberFromInstance(idInstance: number, idCadre: number) {
+    const result = await this.prismaService.membre.deleteMany({
+      where: {
+        idInstance: idInstance,
+        idCadre: idCadre,
+      },
+    });
+    if(result)
+        {
+          const instance = await this.prismaService.instance.findUnique({
+            where: {
+              id: idInstance
+            } , include: {
+              membres: true
+            }
+          });
+          return instance;
+        }
+        else throw new Error('Member not found');    
+  }
   
   remove(id: number) {
     return `This action removes a #${id} instance`;
