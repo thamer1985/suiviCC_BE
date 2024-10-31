@@ -51,6 +51,7 @@ model Chronologie {
   instance    Instance  @relation(fields: [idInstance], references: [id])
   idInstance  Int
   dateEnvoi   DateTime?
+  filePath    String?
   traite  Boolean @default(false)
   commentaire String?
   dateLimite DateTime
