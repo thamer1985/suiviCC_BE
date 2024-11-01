@@ -77,7 +77,7 @@ export class FileManagerService {
         
         try {
             writeFileSync(filePath, file.buffer);
-            await this.prismaService.chronologie.update({ where: { id: chronologieId }, data: { filePath: filePath } });
+            await this.prismaService.chronologie.update({ where: { id: chronologieId }, data: { filePath: file.originalname } });
             return { message: 'File uploaded successfully!', filePath };
         } catch (error) {
             console.error('Error uploading file:', error);

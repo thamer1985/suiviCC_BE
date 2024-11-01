@@ -46,7 +46,7 @@ export class FileManagerController {
         return result;
     }
 
-    @Post('chronologie/download/:dossierId/:chronologieId')
+    @Post('download/chronologie/:chronologieId/dossier/:dossierId')
     async readChronologieFile(@Param('dossierId') dossierId: number, @Param('chronologieId') chronologieId: number, @Body() data: { fileName: string }, @Res() res: Response) {
         const fileContent = await this.fileManagerService.readChronologieFile(dossierId, chronologieId, data.fileName);
         const fileExt = extname(data.fileName).toLowerCase();
