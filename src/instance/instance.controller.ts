@@ -15,6 +15,22 @@ export class InstanceController {
   findAll() {
     return this.instanceService.findAll();
   }
+  @Get('type/:type')
+  findAllByType(@Param('type') type: string) {
+    console.log(type);
+    if(type != 'Standard' && type != 'Commission') {
+      throw new Error('Invalid type');
+    }
+    else{
+      if(type == 'Standard') {
+        return this.instanceService.findAllStandardInstance();
+      }
+      if(type == 'Commission') {
+        return this.instanceService.findAllCommisionInstance();
+      }
+      }
+  }
+  
 
   @Get(':id')
   findOne(@Param('id') id: string) {

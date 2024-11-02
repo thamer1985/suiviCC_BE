@@ -14,30 +14,29 @@ datasource db {
 }
 
 model Dossier {
-  id           Int         @id @default(autoincrement())
-  type         TypeDossier @default(CCharges)
-  sujet        String      @db.LongText
-  numeroDossier     String?
-  dateLettre    DateTime
-  dateLimite    DateTime
-  dateLimiteOffres       DateTime? // Date maintien des offres (spécifique aux dépouillements)
-  matPresident String
+  id                 Int         @id @default(autoincrement())
+  type               TypeDossier @default(CCharges)
+  sujet              String      @db.LongText
+  numeroDossier      String?
+  dateLettre         DateTime
+  dateLimite         DateTime
+  dateLimiteOffres   DateTime? // Date maintien des offres (spécifique aux dépouillements)
+  matPresident       String
   nomPrenomPresident String
-  numDami String?
-  importance Importance @default(Normal)
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  numDami            String?
+  importance         Importance  @default(Normal)
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
 
   Chronologies Chronologie[]
 }
 
 enum Importance {
-Normal
-Important
-TresImportant
-Vital
+  Normal
+  Important
+  TresImportant
+  Vital
 }
-
 
 enum TypeDossier {
   CCharges
@@ -52,35 +51,45 @@ model Chronologie {
   idInstance  Int
   dateEnvoi   DateTime?
   filePath    String?
-  traite  Boolean @default(false)
+  traite      Boolean   @default(false)
   commentaire String?
-  dateLimite DateTime
+  dateLimite  DateTime
 }
 
 model Instance {
-  id               Int                @id @default(autoincrement())
-  libelle          String
-  rang             Int
-  delai Int
+  id           Int           @id @default(autoincrement())
+  libelle      String
+  rang         Int
+  delai        Int
+  matPresident String?
+  type         typeInstance @default(Standard)
   Chronologies Chronologie[]
-  membres            Membre[]
+  membres      Membre[]
 }
 
-model Cadre { //à remplacer par general.agent
-  id        Int      @id @default(autoincrement())
-  MAT_PERS String @db.VarChar(6)
-  NOM_PERS String @db.VarChar(45)
-  NOM_PERS_A String @db.VarChar(45)
-  COD_CLASS String @db.VarChar(2)
+enum typeInstance {
+  Standard 
+  Commission
+}
 
-  membres     Membre[]
+model Cadre {
+  id         Int    @id @default(autoincrement())
+  MAT_PERS   String @db.VarChar(6)
+  NOM_PERS   String @db.VarChar(45)
+  NOM_PERS_A String @db.VarChar(45)
+  COD_CLASS  String @db.VarChar(2)
+
+  membres Membre[]
+
+  @@index([MAT_PERS])
 }
 
 model Membre {
   id         Int      @id @default(autoincrement())
-  cadre     Cadre   @relation(fields: [idCadre], references: [id])
-  idCadre   Int
+  cadre      Cadre    @relation(fields: [idCadre], references: [id])
+  idCadre    Int
   instance   Instance @relation(fields: [idInstance], references: [id])
   idInstance Int
+
   @@unique([idCadre, idInstance])
 }

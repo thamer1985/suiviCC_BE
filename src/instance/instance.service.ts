@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Membre, Prisma } from '@prisma/client';
+import { Membre, Prisma, typeInstance } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -14,8 +14,26 @@ export class InstanceService {
     })}
 
   findAll() {
-    return this.prismaService.instance.findMany();
+    return this.prismaService.instance.findMany({
+      orderBy: {
+        type: 'desc',
+      },
+    });
 
+  }
+  findAllStandardInstance() {
+    return this.prismaService.instance.findMany({
+      where: {
+        type: typeInstance.Standard
+      }
+      });
+  }
+  findAllCommisionInstance() {
+    return this.prismaService.instance.findMany({
+      where: {
+        type: typeInstance.Commission
+      }
+      });
   }
 
   findOne(id: number) {
