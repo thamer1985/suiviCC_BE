@@ -20,15 +20,15 @@ CREATE DATABASE IF NOT EXISTS `suivi_cc_dev` /*!40100 DEFAULT CHARACTER SET utf8
 USE `suivi_cc_dev`;
 
 -- Dumping structure for table suivi_cc_dev.cadre
-DROP TABLE IF EXISTS `cadre`;
 CREATE TABLE IF NOT EXISTS `cadre` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `MAT_PERS` varchar(6) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `NOM_PERS` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `NOM_PERS_A` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `COD_CLASS` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=604 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `MAT_PERS` varchar(6) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `NOM_PERS` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `NOM_PERS_A` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `COD_CLASS` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `Cadre_MAT_PERS_idx` (`MAT_PERS`)
+) ENGINE=InnoDB AUTO_INCREMENT=604 DEFAULT CHARSET=utf8mb3;
 
 -- Dumping data for table suivi_cc_dev.cadre: ~603 rows (approximately)
 INSERT INTO `cadre` (`id`, `MAT_PERS`, `NOM_PERS`, `NOM_PERS_A`, `COD_CLASS`) VALUES
@@ -637,151 +637,122 @@ INSERT INTO `cadre` (`id`, `MAT_PERS`, `NOM_PERS`, `NOM_PERS_A`, `COD_CLASS`) VA
 	(603, '195502', 'وعد منصوري', '', '6');
 
 -- Dumping structure for table suivi_cc_dev.chronologie
-DROP TABLE IF EXISTS `chronologie`;
 CREATE TABLE IF NOT EXISTS `chronologie` (
   `id` int NOT NULL AUTO_INCREMENT,
   `idDossier` int NOT NULL,
   `idInstance` int NOT NULL,
   `dateEnvoi` datetime(3) DEFAULT NULL,
   `traite` tinyint(1) NOT NULL DEFAULT '0',
-  `commentaire` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `commentaire` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `dateLimite` datetime(3) NOT NULL,
+  `filePath` varchar(191) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `Chronologie_idDossier_fkey` (`idDossier`),
   KEY `Chronologie_idInstance_fkey` (`idInstance`),
   CONSTRAINT `Chronologie_idDossier_fkey` FOREIGN KEY (`idDossier`) REFERENCES `dossier` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `Chronologie_idInstance_fkey` FOREIGN KEY (`idInstance`) REFERENCES `instance` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=114 DEFAULT CHARSET=utf8mb3;
 
--- Dumping data for table suivi_cc_dev.chronologie: ~12 rows (approximately)
-INSERT INTO `chronologie` (`id`, `idDossier`, `idInstance`, `dateEnvoi`, `traite`, `commentaire`, `dateLimite`) VALUES
-	(2, 4, 2, '2024-10-16 10:02:09.000', 0, 'في طور الدرس', '2024-10-30 09:45:13.000'),
-	(4, 5, 3, '2024-10-18 07:39:02.000', 0, 'إعداد مطلب شراء', '2024-10-30 09:45:13.000'),
-	(5, 5, 1, '2024-10-19 07:40:53.000', 0, 'للإحالة للرقابة', '2024-10-30 09:45:13.000'),
-	(52, 16, 3, '2024-10-24 07:23:31.212', 1, 'comment', '2024-11-18 07:23:13.854'),
-	(53, 17, 4, '2024-10-24 07:38:25.379', 1, NULL, '2024-11-18 23:00:00.000'),
-	(58, 3, 1, '2024-10-24 09:34:51.958', 1, NULL, '2024-11-23 09:34:51.230'),
-	(59, 3, 1, '2024-10-24 09:35:24.621', 0, NULL, '2024-11-18 09:35:24.030'),
-	(60, 16, 1, '2024-10-28 10:42:10.538', 1, NULL, '2024-11-26 10:42:09.346'),
-	(61, 16, 3, '2024-10-28 11:03:02.950', 0, NULL, '2024-11-22 11:03:00.830'),
-	(62, 17, 1, '2024-10-28 11:15:56.260', 1, NULL, '2024-11-26 11:15:54.693'),
-	(63, 17, 3, '2024-10-28 11:16:36.452', 0, NULL, '2024-11-22 11:16:35.868'),
-	(64, 18, 1, '2024-10-28 11:55:31.493', 0, NULL, '2024-11-26 11:55:30.725');
+-- Dumping data for table suivi_cc_dev.chronologie: ~15 rows (approximately)
+INSERT INTO `chronologie` (`id`, `idDossier`, `idInstance`, `dateEnvoi`, `traite`, `commentaire`, `dateLimite`, `filePath`) VALUES
+	(97, 3, 1, '2024-11-01 11:10:40.491', 1, NULL, '2024-11-30 11:10:33.331', 'FR_PM- Stations de ravitaillement.xlsx'),
+	(98, 3, 3, '2024-11-01 11:18:23.609', 0, 'comment2', '2024-11-26 11:18:12.594', 'syntax-colored-json (1).pdf'),
+	(99, 19, 3, '2024-11-02 08:16:34.451', 1, 'prière de de préparer le DAMI', '2024-11-27 08:15:08.851', 'TR-6-19-2024 (1) (1).png'),
+	(100, 19, 1, '2024-11-02 08:18:41.545', 1, 'A traiter', '2024-12-01 08:18:09.017', 'FR_PM - Structure Organisationnelle (2).xls'),
+	(101, 19, 4, '2024-11-02 08:19:35.376', 1, 'A controler', '2024-12-02 08:19:21.744', NULL),
+	(102, 19, 1, '2024-11-02 08:22:13.792', 1, 'remarque1\nremarque2', '2024-12-01 08:21:37.120', '1722593825.pdf'),
+	(104, 19, 6, '2024-11-02 08:33:04.055', 1, 'A fixer une réunion', '2024-11-03 08:32:44.231', 'ficheProjet.pdf'),
+	(105, 19, 1, '2024-11-02 08:39:28.189', 1, 'date fixé \nOrdre du jour fixé', '2024-12-01 08:39:09.397', NULL),
+	(106, 19, 6, '2024-11-02 08:40:47.645', 1, 'Réunion', '2024-11-14 23:00:00.000', NULL),
+	(107, 19, 4, '2024-11-02 08:42:31.245', 1, 'A préparer PV', '2024-12-02 08:42:12.461', NULL),
+	(108, 19, 1, '2024-11-02 08:43:05.804', 1, 'Décision 1 ; Décision2', '2024-12-01 08:42:41.214', 'PV Controle CC.pdf'),
+	(109, 19, 1, '2024-11-02 08:47:05.828', 1, 'Date publication 14/11/2024\nDate limite d\'acceptation des offres (Date d\'ouverture)', '2024-12-09 23:00:00.000', NULL),
+	(110, 19, 1, '2024-11-15 08:59:12.953', 1, 'Ouverture des offres', '2024-12-01 08:58:59.586', NULL),
+	(111, 20, 8, '2024-11-02 09:02:20.801', 0, 'Pour dépouillement', '2024-12-02 09:01:59.185', NULL),
+	(112, 19, 8, '2024-11-20 10:00:52.350', 0, NULL, '2024-12-02 10:00:49.607', NULL);
 
 -- Dumping structure for table suivi_cc_dev.dossier
-DROP TABLE IF EXISTS `dossier`;
 CREATE TABLE IF NOT EXISTS `dossier` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `type` enum('CCharges','Depouillement') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'CCharges',
-  `sujet` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `matPresident` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type` enum('CCharges','Depouillement') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'CCharges',
+  `sujet` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `matPresident` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `createdAt` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `updatedAt` datetime(3) NOT NULL,
   `dateLettre` datetime(3) NOT NULL,
   `dateLimite` datetime(3) NOT NULL,
   `dateLimiteOffres` datetime(3) DEFAULT NULL,
-  `numeroDossier` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `nomPrenomPresident` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `importance` enum('Normal','Important','TresImportant','Vital') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Normal',
-  `numDami` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `numeroDossier` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nomPrenomPresident` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `importance` enum('Normal','Important','TresImportant','Vital') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Normal',
+  `numDami` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb3;
 
 -- Dumping data for table suivi_cc_dev.dossier: ~15 rows (approximately)
 INSERT INTO `dossier` (`id`, `type`, `sujet`, `matPresident`, `createdAt`, `updatedAt`, `dateLettre`, `dateLimite`, `dateLimiteOffres`, `numeroDossier`, `nomPrenomPresident`, `importance`, `numDami`) VALUES
-	(3, 'CCharges', 'إقتناء مولد كهربائي', '095358', '2024-10-16 14:14:08.000', '2024-10-16 14:14:09.000', '2024-10-10 14:14:10.000', '2024-11-16 14:14:17.000', '1970-01-01 00:00:00.000', 'S3.3245', 'عبدالرزاق صويلح', 'Important', NULL),
+	(3, 'CCharges', 'إقتناء مولد كهربائي', '195154', '2024-10-16 14:14:08.000', '2024-10-16 14:14:09.000', '2024-10-10 14:14:10.000', '2024-11-16 14:14:17.000', '1970-01-01 00:00:00.000', 'S3.3245', 'رشيد الحداد', 'Important', NULL),
 	(4, 'Depouillement', 'إقتناء مواد مكتبية', '195379', '2024-10-16 14:14:08.000', '2024-10-16 14:14:09.000', '2024-10-10 14:14:10.000', '2024-11-16 14:14:17.000', '1970-01-01 00:00:00.000', NULL, 'ثامر رضواني	', 'Normal', NULL),
-	(5, 'Depouillement', 'إقتناء سيارات', '095919', '2024-10-19 07:34:58.000', '2024-10-19 07:35:00.000', '2024-10-01 07:35:04.000', '2024-10-31 07:35:13.000', '1970-01-01 00:00:00.000', NULL, 'علي شادو', 'Normal', NULL),
-	(6, 'CCharges', 'الموضوع', '100432', '2024-10-22 08:24:33.514', '2024-10-22 08:24:33.514', '2024-10-06 23:00:00.000', '2024-10-21 23:00:00.000', NULL, NULL, 'محمد الطيب البكري', 'Normal', NULL),
+	(5, 'Depouillement', 'إقتناء سيارات', '195154', '2024-10-19 07:34:58.000', '2024-10-19 07:35:00.000', '2024-10-01 07:35:04.000', '2024-10-31 07:35:13.000', '1970-01-01 00:00:00.000', NULL, 'رشيد الحداد', 'Normal', NULL),
+	(6, 'CCharges', 'الموضوع', '195154', '2024-10-22 08:24:33.514', '2024-10-22 08:24:33.514', '2024-10-06 23:00:00.000', '2024-10-21 23:00:00.000', '1970-01-01 00:00:00.000', NULL, 'رشــيــد الحــداد', 'Normal', NULL),
 	(7, 'CCharges', 'dazdazd', '195379', '2024-10-22 08:27:45.322', '2024-10-22 08:27:45.322', '2024-10-19 23:00:00.000', '2024-10-08 23:00:00.000', '1970-01-01 00:00:00.000', 'S3.546', 'ثامر رضواني', 'TresImportant', '87965'),
 	(8, 'CCharges', 'test2', '100432', '2024-10-23 08:11:00.476', '2024-10-23 08:11:00.476', '2024-10-15 23:00:00.000', '2024-10-29 23:00:00.000', NULL, '', 'محمد الطيب البكري', 'Important', NULL),
 	(10, 'Depouillement', 'test AO', '195154', '2024-10-23 08:20:35.610', '2024-10-23 08:20:35.610', '2024-10-15 23:00:00.000', '2024-10-30 23:00:00.000', '1970-01-01 00:00:00.000', NULL, 'رشــيــد الحــداد', 'Normal', NULL),
 	(11, 'CCharges', 'test CC', '195379', '2024-10-23 08:26:45.086', '2024-10-23 08:26:45.086', '2024-10-08 23:00:00.000', '2024-10-20 23:00:00.000', NULL, NULL, 'ثامر رضواني', 'Vital', NULL),
 	(12, 'Depouillement', 'test AO2', '100432', '2024-10-23 08:27:40.765', '2024-10-23 08:27:40.765', '2024-10-01 23:00:00.000', '2024-10-19 23:00:00.000', '2024-10-12 23:00:00.000', NULL, 'محمد الطيب البكري', 'TresImportant', NULL),
 	(13, 'Depouillement', 'test AO3', '195379', '2024-10-23 08:29:12.244', '2024-10-23 08:29:12.244', '2024-10-13 23:00:00.000', '2024-10-19 23:00:00.000', '2024-10-13 23:00:00.000', NULL, 'ثامر رضواني', 'Important', NULL),
-	(14, 'CCharges', 'sujet', '195400', '2024-10-23 08:49:09.031', '2024-10-23 08:49:09.031', '2024-09-30 23:00:00.000', '2024-10-06 23:00:00.000', NULL, NULL, 'وليد عمري', 'Normal', NULL),
+	(14, 'CCharges', 'sujet', '195379', '2024-10-23 08:49:09.031', '2024-10-23 08:49:09.031', '2024-09-30 23:00:00.000', '2024-10-06 23:00:00.000', '1970-01-01 00:00:00.000', NULL, 'ثامر رضواني', 'Normal', NULL),
 	(15, 'CCharges', 'sujet', '100432', '2024-10-24 07:21:39.984', '2024-10-24 07:21:39.984', '2024-10-14 23:00:00.000', '2024-10-13 23:00:00.000', NULL, NULL, 'محمد الطيب البكري', 'Important', NULL),
 	(16, 'Depouillement', 'AO4', '195379', '2024-10-24 07:23:05.614', '2024-10-24 07:23:05.614', '2024-10-07 23:00:00.000', '2024-10-19 23:00:00.000', '2024-10-19 23:00:00.000', NULL, 'ثامر رضواني', 'Vital', NULL),
 	(17, 'CCharges', 'CC1', '195379', '2024-10-24 07:37:07.427', '2024-10-24 07:37:07.427', '2024-10-08 23:00:00.000', '2024-10-14 23:00:00.000', NULL, NULL, 'ثامر رضواني', 'Important', NULL),
-	(18, 'CCharges', 'test123', '079514', '2024-10-28 11:55:15.036', '2024-10-28 11:55:15.036', '2024-10-07 23:00:00.000', '2024-10-12 23:00:00.000', NULL, NULL, 'قيس خنشوش', 'TresImportant', '5462');
+	(18, 'CCharges', 'test123', '195154', '2024-10-28 11:55:15.036', '2024-10-28 11:55:15.036', '2024-10-07 23:00:00.000', '2024-10-12 23:00:00.000', '1970-01-01 00:00:00.000', NULL, 'رشيد الحداد', 'TresImportant', '5462'),
+	(19, 'CCharges', 'CC test', '195064', '2024-11-02 08:14:11.611', '2024-11-02 08:14:11.611', '2024-11-01 23:00:00.000', '2024-12-01 23:00:00.000', '1970-01-01 00:00:00.000', 'S3.5468', 'نور الدين بلقاسم', 'Normal', '12354'),
+	(20, 'Depouillement', 'DEP ', '195064', '2024-11-02 08:52:11.540', '2024-11-02 08:52:11.540', '2024-11-29 23:00:00.000', '2024-11-18 23:00:00.000', '2024-11-24 23:00:00.000', 'S3.5468', 'نور الدين بلقاسم', 'Important', '12564');
 
 -- Dumping structure for table suivi_cc_dev.instance
-DROP TABLE IF EXISTS `instance`;
 CREATE TABLE IF NOT EXISTS `instance` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `libelle` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `libelle` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `rang` int NOT NULL,
   `delai` int NOT NULL,
+  `type` enum('Standard','Commission') NOT NULL DEFAULT 'Standard',
+  `matPresident` varchar(191) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb3;
 
--- Dumping data for table suivi_cc_dev.instance: ~5 rows (approximately)
-INSERT INTO `instance` (`id`, `libelle`, `rang`, `delai`) VALUES
-	(1, 'إدارة الشراءات', 3, 29),
-	(2, 'لجنة الفرز', 3, 10),
-	(3, 'إدارة الصيانة والعتاد', 10, 25),
-	(4, 'كتابة هيئات المداولات', 20, 30),
-	(5, 'aaaaa', 7, 36);
+-- Dumping data for table suivi_cc_dev.instance: ~6 rows (approximately)
+INSERT INTO `instance` (`id`, `libelle`, `rang`, `delai`, `type`, `matPresident`) VALUES
+	(1, 'إدارة الشراءات', 3, 29, 'Standard', NULL),
+	(2, 'لجنة التزود', 3, 10, 'Standard', NULL),
+	(3, 'إدارة الصيانة والعتاد', 10, 25, 'Standard', NULL),
+	(4, 'كتابة هيئات المداولات', 20, 30, 'Standard', NULL),
+	(6, 'اللجنة الداخلية للرقابة المسبقة', 5, 1, 'Standard', NULL),
+	(8, 'رئيس لجنة CC test', 0, 30, 'Commission', '195064');
 
 -- Dumping structure for table suivi_cc_dev.membre
-DROP TABLE IF EXISTS `membre`;
 CREATE TABLE IF NOT EXISTS `membre` (
   `id` int NOT NULL AUTO_INCREMENT,
   `idInstance` int NOT NULL,
   `idCadre` int NOT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `Membre_idCadre_idInstance_key` (`idCadre`,`idInstance`),
   KEY `Membre_idInstance_fkey` (`idInstance`),
-  KEY `Membre_idCadre_fkey` (`idCadre`),
   CONSTRAINT `Membre_idCadre_fkey` FOREIGN KEY (`idCadre`) REFERENCES `cadre` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `Membre_idInstance_fkey` FOREIGN KEY (`idInstance`) REFERENCES `instance` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb3;
 
--- Dumping data for table suivi_cc_dev.membre: ~44 rows (approximately)
+-- Dumping data for table suivi_cc_dev.membre: ~9 rows (approximately)
 INSERT INTO `membre` (`id`, `idInstance`, `idCadre`) VALUES
-	(4, 1, 514),
-	(5, 1, 5),
-	(6, 1, 3),
-	(7, 1, 3),
-	(8, 1, 3),
-	(9, 1, 5),
-	(10, 1, 514),
-	(11, 1, 8),
-	(12, 1, 3),
-	(13, 1, 5),
-	(14, 1, 514),
-	(15, 1, 20),
-	(16, 1, 8),
-	(17, 1, 3),
-	(18, 1, 5),
-	(19, 1, 514),
-	(20, 1, 514),
-	(21, 1, 20),
-	(22, 1, 8),
-	(23, 1, 3),
-	(24, 1, 5),
-	(25, 1, 514),
-	(26, 1, 24),
-	(27, 1, 20),
-	(28, 1, 8),
-	(29, 1, 3),
-	(30, 1, 5),
-	(31, 1, 514),
-	(32, 1, 361),
-	(33, 1, 24),
-	(34, 1, 20),
-	(35, 1, 8),
-	(36, 1, 3),
-	(37, 1, 5),
-	(38, 1, 514),
-	(39, 2, 2),
-	(40, 2, 22),
-	(41, 2, 2),
-	(42, 2, 40),
-	(43, 2, 22),
-	(44, 2, 2),
-	(45, 3, 514),
-	(46, 2, 514),
-	(47, 4, 514);
+	(23, 3, 4),
+	(25, 6, 43),
+	(3, 3, 106),
+	(6, 4, 106),
+	(26, 8, 313),
+	(1, 1, 361),
+	(19, 2, 361),
+	(20, 3, 361),
+	(4, 2, 514),
+	(11, 4, 514);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
