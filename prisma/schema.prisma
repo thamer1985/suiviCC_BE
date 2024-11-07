@@ -11,13 +11,13 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  // shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model Dossier {
-  id                 Int         @id @default(autoincrement())
-  type               TypeDossier @default(CCharges)
-  sujet              String      @db.LongText
+  id                 Int           @id @default(autoincrement())
+  type               TypeDossier   @default(CCharges)
+  sujet              String        @db.LongText
   numeroDossier      String?
   dateLettre         DateTime
   dateLimite         DateTime
@@ -25,11 +25,14 @@ model Dossier {
   matPresident       String
   nomPrenomPresident String
   numDami            String?
-  importance         Importance  @default(Normal)
-  createdAt          DateTime    @default(now())
-  updatedAt          DateTime    @updatedAt
-
-  Chronologies Chronologie[]
+  importance         Importance    @default(Normal)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  archive            Boolean       @default(false)
+  Chronologies       Chronologie[]
+  instance           Instance?     @relation(fields: [instanceId], references: [id])
+  instanceId         Int?          @unique
+  @@index([id,type,archive])
 }
 
 enum Importance {
@@ -45,16 +48,19 @@ enum TypeDossier {
 }
 
 model Chronologie {
-  id          Int       @id @default(autoincrement())
-  dossier     Dossier   @relation(fields: [idDossier], references: [id])
-  idDossier   Int
-  instance    Instance  @relation(fields: [idInstance], references: [id])
-  idInstance  Int
-  dateEnvoi   DateTime?
-  filePath    String?
-  traite      Boolean   @default(false)
-  commentaire String?
-  dateLimite  DateTime
+  id           Int       @id @default(autoincrement())
+  fromInstance String?
+  dateEnvoi    DateTime?
+  filePath     String?
+  traite       Boolean   @default(false)
+  commentaire  String?
+  dateLimite   DateTime
+
+  idDossier    Int
+  dossier      Dossier   @relation(fields: [idDossier], references: [id])
+  idInstance   Int
+  instance     Instance  @relation(fields: [idInstance], references: [id])
+  @@index([id])
 }
 
 model Instance {
@@ -63,13 +69,15 @@ model Instance {
   rang         Int
   delai        Int
   matPresident String?
-  type         typeInstance @default(Standard)
+  type         typeInstance  @default(Standard)
   Chronologies Chronologie[]
   membres      Membre[]
+  dossier      Dossier?
+  @@index([id,type])
 }
 
 enum typeInstance {
-  Standard 
+  Standard
   Commission
 }
 

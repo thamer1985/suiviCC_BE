@@ -15,6 +15,12 @@ export class InstanceController {
   findAll() {
     return this.instanceService.findAll();
   }
+
+  @Get('dossier/:dossierId')
+  getFiltredInstancestoSend(@Param('dossierId') dossierId: string) {
+    return this.instanceService.getFiltredInstancestoSend(+dossierId);
+  }
+  
   @Get('type/:type')
   findAllByType(@Param('type') type: string) {
     console.log(type);

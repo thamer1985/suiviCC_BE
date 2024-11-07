@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Chronologie, Dossier, Instance, Prisma, TypeDossier } from '@prisma/client';
+import { Chronologie, Dossier, Instance, Prisma, TypeDossier, typeInstance } from '@prisma/client';
 import { log } from 'console';
 
 @Injectable()
@@ -115,62 +115,7 @@ export class DossierService {
     
     return dossiers;
   }
-  // async getDossiersForCadreGroupedByInstance(idCadre: number, typeDossier: string) {
-  //   const typeDossierEnum = TypeDossier[typeDossier as keyof typeof TypeDossier];
-    
-  //   if (!typeDossierEnum) {
-  //     throw new BadRequestException('Invalid typeDossier');
-  //   }
-  //   const dossiers = await this.prismaService.dossier.findMany({
-  //     where: {
-  //       AND: [
-  //         { type: typeDossierEnum },
-  //         {
-  //           Chronologies: {
-  //             some: {
-  //               instance: {
-  //                 membres: {
-  //                   some: { idCadre },
-  //                 },
-  //               }
-  //             },
-  //           },
-  //         },
-  //       ],
-  //     },
-  //     include: {
-  //       Chronologies: {
-  //         orderBy: {
-  //           dateEnvoi: 'asc',
-  //         }
-  //       },
-  //     },
-  //   });
-  //   // Group dossiers by instance
-  //   Logger.debug(dossiers);
-    
 
-  //   const groupedByInstance = dossiers.reduce((groups, dossier) => {
-  //     dossier.Chronologies.forEach((chronologie) => {
-  //       const instanceId = chronologie.idInstance;
-  //       if (!groups[instanceId]) {
-  //         groups[instanceId] = {
-  //           instanceId: chronologie.idInstance,
-  //           dossiers: [],
-  //         };
-  //       }
-  //       // Only add the dossier once per instance
-  //       if (!groups[instanceId].dossiers.find(d => d.id === dossier.id)) {
-  //         if(!chronologie.traite){
-  //           groups[instanceId].dossiers.push(dossier);
-  //         }
-  //       }
-  //     });
-  //     return groups;
-  //   }, {});
-
-  //   return Object.values(groupedByInstance);
-  // }
 
   async getDossiersForCadreGroupedByInstance(matricule: string, typeDossier: string) {
     const typeDossierEnum = TypeDossier[typeDossier as keyof typeof TypeDossier];
@@ -238,43 +183,7 @@ export class DossierService {
   
     return Object.values(groupedByInstance);
   }
-  // async getDossiersForCadreGroupedByInstance(idCadre: number, typeDossier: string) {
-  //   const typeDossierEnum = TypeDossier[typeDossier as keyof typeof TypeDossier];
-  
-  //   if (!typeDossierEnum) {
-  //     throw new BadRequestException('Invalid typeDossier');
-  //   }
-  
-  //   const query = `
-  //     SELECT d.*, c.id as cadreId, ch.idInstance
-  //     FROM dossier d
-  //     LEFT JOIN chronologie ch ON ch.idDossier = d.id
-  //     LEFT JOIN instance i ON i.id = ch.idInstance
-  //     LEFT JOIN membre m ON i.id = m.idInstance
-  //     LEFT JOIN cadre c ON c.id = m.idCadre
-  //     WHERE c.id = ${idCadre} AND ch.traite = 0 AND d.type = '${typeDossier}'
-  //   `;
-  
-  //   const dossiers = await this.prismaService.$queryRawUnsafe<any>(query);
-  
-  //   Logger.debug(dossiers);
-  
-  //   const groupedByInstance = dossiers.reduce((groups: any, dossier: any) => {
-  //     const instanceId = dossier.idInstance;
-  //     if (!groups[instanceId]) {
-  //       groups[instanceId] = {
-  //         instanceId: dossier.idInstance,
-  //         dossiers: [],
-  //       };
-  //     }
-  //     if (!groups[instanceId].dossiers.find((d: any) => d.id === dossier.id)) {
-  //       groups[instanceId].dossiers.push(dossier);
-  //     }
-  //     return groups;
-  //   }, {});
-  
-  //   return Object.values(groupedByInstance);
-  // }
+
   
 
   async findOne(id: number) {
@@ -291,9 +200,39 @@ export class DossierService {
     });
   }
 
-  create(createDossierDto: Prisma.DossierCreateInput) {
-    return this.prismaService.dossier.create({data:createDossierDto});
+  async create(createDossierDto: Prisma.DossierCreateInput) {
+    const _libelle = createDossierDto.type == 'CCharges' ? 'رئيس لجنة كراس الشروط' : 'رئيس لجنة فرز العروض'
+    
+    const dossier= await this.prismaService.dossier.create({
+      data: {
+        ...createDossierDto,
+        instance: {
+          create: {
+            libelle: _libelle,
+            type: typeInstance.Commission,
+            matPresident: createDossierDto.matPresident,
+            delai: 30,
+            rang: 0,
+          }
+        }
+      },
+      include: {
+        instance: true,
+        Chronologies:true
+      }
+    });
+    await this.prismaService.chronologie.create({
+      data: {
+        idDossier: dossier.id,
+        idInstance: dossier.instance.id,
+        commentaire:"إنشاء ملف جديد",
+        dateEnvoi: new Date(),
+        dateLimite: dossier.dateLimite,
+      }
+    })
+    return this.findOne(dossier.id);  
   }
+  
   
   patch(id: number, updateDossierDto: Prisma.DossierUpdateInput) {
     console.log(updateDossierDto);

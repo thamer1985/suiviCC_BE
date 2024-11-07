@@ -21,6 +21,25 @@ export class InstanceService {
     });
 
   }
+  async getFiltredInstancestoSend(dossierId: number) {
+    const instances = await this.prismaService.instance.findMany({
+      where: {
+        OR: [
+         { dossier: {
+            id: dossierId
+          }
+        },
+        { type: typeInstance.Standard }
+        ]
+      },
+      orderBy: {
+        rang: 'asc',
+        
+      },
+    });
+return instances;
+
+  }
   findAllStandardInstance() {
     return this.prismaService.instance.findMany({
       where: {
