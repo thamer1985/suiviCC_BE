@@ -27,9 +27,10 @@ export class DossierController {
   getDossiersForCadreGroupedByInstance(@Param('type') type: string, @Param('matricule') matricule: string) {
     return this.dossierService.getDossiersForCadreGroupedByInstance(matricule,type );
   }
-  @Get('matPresident/:matPresident/type/:type/')
-  getDossiersByCadreAndType(@Param('type') type: string, @Param('matPresident') matPresident: string) {
-    return this.dossierService.getDossiersByCadreAndType(matPresident,type );
+  @Get('matPresident/:matPresident/type/:type/archived/:archived')
+  getDossiersByCadreAndType(@Param('type') type: string, @Param('matPresident') matPresident: string, @Param('archived') archived: string) {
+   const _archived = archived == 'true' ? true : false
+    return this.dossierService.getDossiersByCadreAndType(matPresident,type,_archived );
   }
 
   @Get(':id')

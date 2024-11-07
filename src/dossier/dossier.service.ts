@@ -15,7 +15,8 @@ export class DossierService {
   async findAll() {
     return await this.prismaService.dossier.findMany({
       include:{
-        Chronologies:true
+        Chronologies:true,
+        instance:true
       }
     });
   }
@@ -33,6 +34,7 @@ export class DossierService {
       },
       include: {
         Chronologies: true,
+        instance:true
       },
     });
   }
@@ -71,7 +73,7 @@ export class DossierService {
      
   }
 
-  async getDossiersByCadreAndType(matPresident: string, typeDossier: string) {
+  async getDossiersByCadreAndType(matPresident: string, typeDossier: string,archived: boolean) {
     const typeDossierEnum = TypeDossier[typeDossier as keyof typeof TypeDossier];
     let dossiers:Dossier[];
     if (!typeDossierEnum) {
@@ -82,7 +84,9 @@ export class DossierService {
       dossiers = await this.prismaService.dossier.findMany({
         where: {
           AND: [
-            { type: typeDossierEnum },
+            { type: typeDossierEnum,
+              archive: archived
+             },
           ],
         },
         include: {
@@ -91,13 +95,14 @@ export class DossierService {
               dateEnvoi: 'asc',
             }
           },
+          instance:true
         },
         });
     }else{
        dossiers = await this.prismaService.dossier.findMany({
         where: {
           AND: [
-            { type: typeDossierEnum },
+            { type: typeDossierEnum ,archive:archived},
             {
               matPresident: matPresident
             },
@@ -109,6 +114,7 @@ export class DossierService {
               dateEnvoi: 'asc',
             }
           },
+          instance:true
         },
         });
     }
@@ -160,6 +166,7 @@ export class DossierService {
             traite: false,
           },
         },
+        instance:true
       },
     });
   
@@ -195,7 +202,8 @@ export class DossierService {
         Chronologies:{
           orderBy:{dateEnvoi:'asc'},
           include:{instance:true}
-        }
+        },
+        instance:true
       }
     });
   }
@@ -234,36 +242,39 @@ export class DossierService {
   }
   
   
-  patch(id: number, updateDossierDto: Prisma.DossierUpdateInput) {
+  async patch(id: number, updateDossierDto: Prisma.DossierUpdateInput) {
     console.log(updateDossierDto);
     
-    return this.prismaService.dossier.update({
+    await this.prismaService.dossier.update({
       where:{
         id:id
       },
       data:updateDossierDto
     });
+    return this.findOne(id);
   }
   // can Use Patch
   async updateLastChronologie(dossierId: number) {
-    const lastChronologie = await this.prismaService.chronologie.findFirst({
+    let  lastChronologie1 = await this.prismaService.chronologie.findFirst({
       where: { idDossier: dossierId },
-      orderBy: { dateEnvoi: 'desc' }, 
+      include:{instance:true}
     });
     
-    if (lastChronologie) {
-      await this.prismaService.chronologie.update({
-        where: { id: lastChronologie.id },
+    // if (lastChronologie) {
+      const lastChronologie=await this.prismaService.chronologie.update({
+        where: { id: lastChronologie1.id },
         data: { traite: true },
+        include:{instance:true}
       });
-    }
-
+    // }
+    Logger.debug(lastChronologie)
     return lastChronologie;
   }
   async send(dossierId: number, chronologie: Chronologie) {
     console.log(chronologie);
-    await this.updateLastChronologie(dossierId);
-
+    const lastChronologie=await this.updateLastChronologie(dossierId);
+    const dossier=await this.findOne(dossierId);
+    const lastInstance=dossier.instance.libelle;
      await this.prismaService.dossier.update({
       where: {
         id: dossierId, 
@@ -277,10 +288,13 @@ export class DossierService {
               },
             },
             // idInstance: chronologie.id, 
+            
             dateEnvoi: chronologie.dateEnvoi,
             traite: false, 
             commentaire: chronologie.commentaire,
             dateLimite: chronologie.dateLimite,
+            fromInstance:lastInstance
+            // fromInstance:lastChronologie.instance.libelle
           },
         },
       },
