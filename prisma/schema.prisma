@@ -30,7 +30,7 @@ model Dossier {
   updatedAt          DateTime      @updatedAt
   archive            Boolean       @default(false)
   Chronologies       Chronologie[]
-  instance           Instance?     @relation(fields: [instanceId], references: [id])
+  instance           Instance?     @relation(fields: [instanceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   instanceId         Int?          @unique
   @@index([id,type,archive])
 }

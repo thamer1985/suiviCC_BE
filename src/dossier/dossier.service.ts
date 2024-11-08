@@ -133,7 +133,7 @@ export class DossierService {
         id: true,
       }
     });
-    Logger.debug(cadre);
+    Logger.debug("cadre", cadre);
     const idCadre = cadre.id;
     const dossiers = await this.prismaService.dossier.findMany({
       where: {
@@ -165,7 +165,7 @@ export class DossierService {
       },
     });
   
-    Logger.debug(dossiers);
+    Logger.debug("dossiers:", dossiers);
   
     const groupedByInstance = dossiers.reduce((groups, dossier) => {
       dossier.Chronologies.forEach((chronologie) => {
@@ -253,6 +253,7 @@ export class DossierService {
       where: { idDossier: dossierId },
       orderBy: { dateEnvoi: 'desc' }, 
     });
+    Logger.log(lastChronologie,"lastChronologie");
     
     if (lastChronologie) {
       await this.prismaService.chronologie.update({
