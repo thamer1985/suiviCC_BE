@@ -251,7 +251,10 @@ export class DossierService {
   async updateLastChronologie(dossierId: number) {
     const lastChronologie = await this.prismaService.chronologie.findFirst({
       where: { idDossier: dossierId },
-      orderBy: { dateEnvoi: 'desc' }, 
+      orderBy: { dateEnvoi: 'desc' },
+      include: {
+        instance: true,
+      } 
     });
     Logger.log(lastChronologie,"lastChronologie");
     
@@ -266,9 +269,16 @@ export class DossierService {
   }
   async send(dossierId: number, chronologie: Chronologie) {
     console.log(chronologie);
-    await this.updateLastChronologie(dossierId);
-
-     await this.prismaService.dossier.update({
+    const lastChronologie = await this.updateLastChronologie(dossierId);
+    const dossier=await this.prismaService.dossier.findUnique({
+      where: {
+        id: dossierId,
+      },include: {
+        instance: true,
+      } 
+    })
+    Logger.debug(dossier,"dossier");
+    await this.prismaService.dossier.update({
       where: {
         id: dossierId, 
       },
@@ -285,25 +295,41 @@ export class DossierService {
             traite: false, 
             commentaire: chronologie.commentaire,
             dateLimite: chronologie.dateLimite,
+            fromInstance:lastChronologie.instance.libelle
           },
         },
       },
       include: {
         Chronologies: true,
-        // Instance: true, 
-      },
-    })
-    return await this.prismaService.dossier.findFirst({
-      where: {
-        id: dossierId, 
-      },
-      include: {
-        Chronologies: {
-          include: {
-            instance: true,},
-        },
       }
     })
+
+    //  await this.prismaService.dossier.update({
+    //   where: {
+    //     id: dossierId, 
+    //   },
+    //   data: {
+    //     Chronologies: {
+    //       create: {
+    //         instance: {
+    //           connect: {
+    //             id: chronologie.idInstance, 
+    //           },
+    //         },
+    //         // idInstance: chronologie.id, 
+    //         dateEnvoi: chronologie.dateEnvoi,
+    //         traite: false, 
+    //         commentaire: chronologie.commentaire,
+    //         dateLimite: chronologie.dateLimite,
+    //       },
+    //     },
+    //   },
+    //   include: {
+    //     Chronologies: true,
+    //     // Instance: true, 
+    //   },
+    // })
+    return this.findOne(dossierId);
       
     }
 
