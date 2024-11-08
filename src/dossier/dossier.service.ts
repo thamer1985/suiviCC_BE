@@ -77,8 +77,8 @@ export class DossierService {
     if (!typeDossierEnum) {
       throw new BadRequestException('Invalid typeDossier');
     }
-    // To Remove
-    if(matPresident=="195379"){
+    // To Remove 095919
+    if(matPresident=="195379"|| matPresident=="095970" || matPresident=="095919" ){
       dossiers = await this.prismaService.dossier.findMany({
         where: {
           AND: [
