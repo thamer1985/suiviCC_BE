@@ -13,7 +13,7 @@ async function bootstrap() {
   app.use(urlencoded({ extended: true, limit: '50mb' }));
   app.useStaticAssets(join(__dirname, '..', 'uploads'));
   app.enableCors({
-    origin: ['http://localhost:4202', 'http://10.76.2.64:4202','http://10.71.0.24:4202'],
+    origin: ['http://localhost:4202', 'http://10.76.100.50:4202','http://10.71.0.24:4202'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization'],
