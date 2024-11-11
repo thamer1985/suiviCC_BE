@@ -2,15 +2,16 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { DossierService } from './dossier.service';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
 import { Chronologie, Prisma } from '@prisma/client';
+import { RolesGuard } from 'src/auth/role.guard';
+import { UserRole } from 'src/auth/constants';
+import { Roles } from 'src/auth/roles.decorator';
 @UseGuards(JwtAuthGuard)
 @Controller('dossier')
 export class DossierController {
   constructor(private readonly dossierService: DossierService) {}
-
-  // @UseGuards(JwtAuthGuard)
- 
-
   
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.Admin)
   @Get()
   findAll() {
     return this.dossierService.findAll();
