@@ -237,8 +237,9 @@ export class DossierService {
   
   
   async patch(id: number, updateDossierDto: Prisma.DossierUpdateInput) {
-    console.log(updateDossierDto);
     
+    // delete updateDossierDto.id;
+    console.log(updateDossierDto);
     await this.prismaService.dossier.update({
       where:{
         id:id

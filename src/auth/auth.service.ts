@@ -18,9 +18,9 @@ export class AuthService {
   constructor(
     private prismaGeneralService: PrismaGeneralService,
     private prismaService: PrismaService,
-    private cadreService:CadreService,
+    private cadreService: CadreService,
     private jwt: JwtService,
-  ) {}
+  ) { }
 
   async login(matricule: string, password: string, res: any) {
     const user = await this.prismaGeneralService.agent.findUnique({
@@ -37,84 +37,102 @@ export class AuthService {
       throw new BadRequestException('Incorrect Password');
     }
 
-    
-    const role = this.getUserRole(matricule);
-    //Get instances
-    const instances = await this.cadreService.getInstances(matricule);
-    console.log(instances);
-    
-    const token = await this.signToken({
-      matricule: user.matricule,
-      name: user.nom_prenom,
-      instances: instances,
-    });
-    if (!token) {
-      throw new ForbiddenException('Token not received');
+
+    const role = await this.getUserRole(matricule);
+    if (!role) {
+      res.status(404);
+      res.send({ message: 'User not found' });
     }
-    res.cookie('token', token,{
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      // secure: false,
-      expires: new Date(Date.now() + oneDay),
-      // expires: new Date(Date.now() + 30*1000)
-  });
- 
-    res.send({
-      message: 'Logged In',
-      matricule: user.matricule,
-      name: user.nom_prenom,
-      instances: instances,
-      role: role
-      //data: token
-    });
+    else {
+      //Get instances
+      const instances = await this.cadreService.getInstances(matricule);
+      console.log(instances);
+
+      const token = await this.signToken({
+        matricule: user.matricule,
+        name: user.nom_prenom,
+        instances: instances,
+      });
+      if (!token) {
+        throw new ForbiddenException('Token not received');
+      }
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        // secure: false,
+        expires: new Date(Date.now() + oneDay),
+        // expires: new Date(Date.now() + 30*1000)
+      });
+
+      res.send({
+        message: 'Logged In',
+        matricule: user.matricule,
+        name: user.nom_prenom,
+        instances: instances,
+        role: role
+        //data: token
+      });
+    }
+
   }
   checkProfil(generalProfil: { matricule: string; profil: string; id_application: number; last_access: Date | null; }): UserRole {
-    let userRole:UserRole = UserRole.User;
-    console.log("-------------- ",generalProfil.profil);
-    
+    let userRole: UserRole = UserRole.User;
+    console.log("-------------- ", generalProfil.profil);
+
     switch (generalProfil.profil) {
       case 'SysAdmin':
-        Logger.debug(generalProfil,'SysAdmin');
-        userRole=UserRole.SysAdmin
+        Logger.debug(generalProfil, 'SysAdmin');
+        userRole = UserRole.SysAdmin
         break;
       case 'Admin':
-        Logger.debug(generalProfil,'Admin');
-        userRole=UserRole.Admin
+        Logger.debug(generalProfil, 'Admin');
+        userRole = UserRole.Admin
         break;
       case 'DG':
-        Logger.debug(generalProfil,'DG');
-        userRole=UserRole.DG
+        Logger.debug(generalProfil, 'DG');
+        userRole = UserRole.DG
         break;
       case 'User':
-        Logger.debug(generalProfil,'User');
-      userRole=UserRole.User;
+        Logger.debug(generalProfil, 'User');
+        userRole = UserRole.User;
         break;
 
       default:
-        userRole=UserRole.User;
+        userRole = UserRole.User;
         break;
     }
     return userRole;
 
   }
-  async getUserRole(matricule : string):Promise<UserRole>{
-    let userRole:UserRole = undefined;  
+  async getUserRole(matricule: string): Promise<UserRole> {
+    let userRole: UserRole = undefined;
     //Get role
-    const generalProfil= await this.prismaGeneralService.profil.findFirstOrThrow({
-      where:
-      {AND:[
+    try {
+      const generalProfil = await this.prismaGeneralService.profil.findFirstOrThrow({
+        where:
         {
-          matricule:matricule
-        },
-        {
-          id_application:13
+          AND: [
+            {
+              matricule: matricule
+            },
+            {
+              id_application: 13
+            }
+          ]
         }
-      ]  
-      }
-    })
-    userRole=this.checkProfil(generalProfil);
-    console.log("Role: ", userRole);
-    return userRole;
+      })
+
+      userRole = this.checkProfil(generalProfil);
+      console.log("Role: ", userRole);
+      return userRole;
+
+    } catch (error) {
+      return userRole;
+
+    }
+
+
+
   }
   async comparePassword(args: { password: string; hash: string }) {
     // h1=bcrypt.hash(args.password)

@@ -10,8 +10,8 @@ import { Roles } from 'src/auth/roles.decorator';
 export class DossierController {
   constructor(private readonly dossierService: DossierService) {}
   
-  @UseGuards(RolesGuard)
-  @Roles(UserRole.Admin)
+  // @UseGuards(RolesGuard)
+  // @Roles(UserRole.Admin)
   @Get()
   findAll() {
     return this.dossierService.findAll();
@@ -54,7 +54,8 @@ export class DossierController {
     return this.dossierService.send(+id, chronologie);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.SysAdmin)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.dossierService.remove(+id);
