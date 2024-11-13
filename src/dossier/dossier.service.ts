@@ -92,7 +92,7 @@ export class DossierService {
             orderBy: {
               dateEnvoi: 'asc',
             }
-          },
+          }, instance:true
         },
         });
     }else{
@@ -110,7 +110,7 @@ export class DossierService {
             orderBy: {
               dateEnvoi: 'asc',
             }
-          },
+          }, instance:true
         },
         });
     }

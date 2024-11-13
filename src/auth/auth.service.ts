@@ -156,10 +156,11 @@ export class AuthService {
   async verifyToken(token: string): Promise<{ isAuthenticated: boolean; user?: any }> {
     try {
       // Decode and verify the token
-      console.log("token: ",token);
-      const decoded = await this.jwt.verify(token);
-      console.log("decoded: ",decoded);
+      // console.log("token: ",token);
       
+      const decoded = await this.jwt.verify(token);
+
+      // console.log("decoded: ",decoded);
       // Optionally, find the user in the database
       // const user = await this.prismaGeneralService.agent.findUnique({ where: { matricule: decoded.matricule } });
 
