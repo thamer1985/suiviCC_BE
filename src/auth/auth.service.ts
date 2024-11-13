@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   Injectable,
   Logger,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaGeneralService } from 'src/prisma_general/prisma_general.service';
 const bcrypt = require('bcryptjs');
@@ -146,8 +147,29 @@ export class AuthService {
     const payload = args;
     return this.jwt.signAsync(payload, { secret: jwtSecret });
   }
-  signout(req: any, res: any) {
+  logout(req: any, res: any) {
     res.clearCookie('token');
     return res.send({ message: 'Cookie cleared' });
+  }
+
+
+  async verifyToken(token: string): Promise<{ isAuthenticated: boolean; user?: any }> {
+    try {
+      // Decode and verify the token
+      console.log("token: ",token);
+      const decoded = await this.jwt.verify(token);
+      console.log("decoded: ",decoded);
+      
+      // Optionally, find the user in the database
+      // const user = await this.prismaGeneralService.agent.findUnique({ where: { matricule: decoded.matricule } });
+
+      // if (!user) {
+      //   throw new UnauthorizedException('User not found');
+      // }
+
+      return { isAuthenticated: true };
+    } catch (error) {
+      throw new UnauthorizedException('Invalid or expired token');
+    }
   }
 }

@@ -10,7 +10,9 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CadreService } from 'src/cadre/cadre.service';
 @Global()
 @Module({
-  imports: [JwtModule.register({}), PassportModule],
+  imports: [JwtModule.register({
+    secret: process.env.JWT_SECRET,
+    signOptions: { expiresIn: '1d' }}), PassportModule],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, PrismaGeneralService, PrismaService,CadreService],
   exports: [AuthService],

@@ -12,7 +12,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private prismaGeneralService:PrismaGeneralService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([JwtStrategy.extractJWT]),
-      secretOrKey: "cc07102024",
+      secretOrKey: jwtSecret,
     });
   }
 
