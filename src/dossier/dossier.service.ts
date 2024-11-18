@@ -71,14 +71,13 @@ export class DossierService {
      
   }
 
-  async getDossiersByCadreAndType(matPresident: string, typeDossier: string,archived: boolean) {
+  async getAllDossiersByType(matPresident: string, typeDossier: string,archived: boolean) {
     const typeDossierEnum = TypeDossier[typeDossier as keyof typeof TypeDossier];
     let dossiers:Dossier[];
     if (!typeDossierEnum) {
       throw new BadRequestException('Invalid typeDossier');
     }
-    // To Remove 095919
-    if(matPresident=="195379"|| matPresident=="095970" || matPresident=="095919" ){
+  
       dossiers = await this.prismaService.dossier.findMany({
         where: {
           AND: [
@@ -95,7 +94,17 @@ export class DossierService {
           }, instance:true
         },
         });
-    }else{
+    
+    
+    return dossiers;
+  }
+  async getDossiersByCadreAndType(matPresident: string, typeDossier: string,archived: boolean) {
+    const typeDossierEnum = TypeDossier[typeDossier as keyof typeof TypeDossier];
+    let dossiers:Dossier[];
+    if (!typeDossierEnum) {
+      throw new BadRequestException('Invalid typeDossier');
+    }
+
        dossiers = await this.prismaService.dossier.findMany({
         where: {
           AND: [
@@ -113,7 +122,7 @@ export class DossierService {
           }, instance:true
         },
         });
-    }
+    
     
     return dossiers;
   }

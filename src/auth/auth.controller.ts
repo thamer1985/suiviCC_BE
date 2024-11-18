@@ -23,7 +23,7 @@ export class AuthController {
     console.log(token);
     
     if (!token) {
-      console.log("There is not token" );
+      console.log("There is no token" );
       
       return res.status(401).json({ isAuthenticated: false });
     }

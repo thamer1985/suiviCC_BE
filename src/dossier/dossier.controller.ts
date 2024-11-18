@@ -24,9 +24,18 @@ export class DossierController {
   findAllByInstanceByType(@Param('type') type: string, @Param('instanceId') instanceId: string) {
     return this.dossierService.findAllByInstanceByType(type, +instanceId);
   }
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.User)
   @Get('instance/matricule/:matricule/type/:type')
   getDossiersForCadreGroupedByInstance(@Param('type') type: string, @Param('matricule') matricule: string) {
     return this.dossierService.getDossiersForCadreGroupedByInstance(matricule,type );
+  }
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.Admin,UserRole.SysAdmin,UserRole.DG)
+  @Get('admin/matPresident/:matPresident/type/:type/archived/:archived')
+  getAllDossiersByType(@Param('type') type: string, @Param('matPresident') matPresident: string, @Param('archived') archived: string) {
+   const _archived = archived == 'true' ? true : false
+    return this.dossierService.getAllDossiersByType(matPresident,type,_archived );
   }
   @Get('matPresident/:matPresident/type/:type/archived/:archived')
   getDossiersByCadreAndType(@Param('type') type: string, @Param('matPresident') matPresident: string, @Param('archived') archived: string) {
