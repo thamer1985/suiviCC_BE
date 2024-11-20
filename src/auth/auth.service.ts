@@ -62,6 +62,7 @@ export class AuthService {
         // secure: process.env.NODE_ENV === "production",
         secure: false,
         expires: new Date(Date.now() + oneDay),
+        //  sameSite: "None",
         // expires: new Date(Date.now() + 30*1000)
       });
 
