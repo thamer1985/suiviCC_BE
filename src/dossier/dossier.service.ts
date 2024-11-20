@@ -138,6 +138,112 @@ export class DossierService {
       return countResult;
       
   }
+  async CountAllByMatriculeForAdmin(matricule:string) {
+    let countResult={} as CountResult;
+
+    countResult.ccEncours = await this.prismaService.dossier.count({
+      where: {
+        AND: [
+          { 
+            type: TypeDossier.CCharges,
+            archive: false
+           },
+        ],
+      }
+      });
+      countResult.depEncours = await this.prismaService.dossier.count({
+      where: {
+        AND: [
+          { 
+            type: TypeDossier.Depouillement,
+            archive: false
+           },
+        ],
+      }
+      });
+      countResult.ccHorsDL = await this.prismaService.dossier.count({
+      where: {
+        AND: [
+          { 
+            type: TypeDossier.CCharges,
+            archive: false,
+            dateLimite: {
+              lt: new Date()
+            }
+            },
+        ],
+      }
+      });
+      countResult.depHorsDL = await this.prismaService.dossier.count({
+      where: {
+        AND: [
+          { 
+            type: TypeDossier.Depouillement,
+            archive: false,
+            dateLimite: {
+              lt: new Date()
+            }
+            },
+        ],
+      }
+      });
+
+      const cadre = await this.prismaService.cadre.findFirst({
+        where: {
+          MAT_PERS: { startsWith:matricule}
+        },
+        select: {
+          id: true,
+        }
+      });
+      Logger.debug("cadre", cadre);
+      const idCadre = cadre.id;
+      countResult.ccInstance = await this.prismaService.dossier.count({
+        where: {
+          AND: [
+            { type: TypeDossier.CCharges, archive: false },
+            {
+              Chronologies: {
+                some: {
+                  traite: false,
+                  instance: {
+                    membres: {
+                      some: { idCadre: idCadre },
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        }
+      });
+
+      countResult.depInstance = await this.prismaService.dossier.count({
+        where: {
+          AND: [
+            { type: TypeDossier.Depouillement, archive: false },
+            {
+              Chronologies: {
+                some: {
+                  traite: false,
+                  instance: {
+                    membres: {
+                      some: { idCadre: idCadre },
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        }
+      });
+    
+
+        
+      Logger.debug("result: ", countResult);
+      return countResult;
+      
+  }
   async findAllByType(type: string) {
     // Convert the string to the enum type
     const enumType = TypeDossier[type as keyof typeof TypeDossier]; 

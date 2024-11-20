@@ -21,6 +21,10 @@ export class DossierController {
   CountAllByMatricule(@Param('matricule') matricule: string) {
     return this.dossierService.countAllByMatricule(matricule);
   }
+  @Get('admin/count/matricule/:matricule')
+  CountAllByMatriculeForAdmin(@Param('matricule') matricule: string) {
+    return this.dossierService.CountAllByMatriculeForAdmin(matricule);
+  }
   
   @Get('type/:type')
   findAllByType(@Param('type') type: string) {
