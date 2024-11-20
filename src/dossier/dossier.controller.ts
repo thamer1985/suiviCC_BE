@@ -16,14 +16,20 @@ export class DossierController {
   findAll() {
     return this.dossierService.findAll();
   }
+
+  @Get('count/matricule/:matricule')
+  CountAllByMatricule(@Param('matricule') matricule: string) {
+    return this.dossierService.countAllByMatricule(matricule);
+  }
+  
   @Get('type/:type')
   findAllByType(@Param('type') type: string) {
     return this.dossierService.findAllByType(type);
   }
-  @Get('instance/:instanceId/type/:type')
-  findAllByInstanceByType(@Param('type') type: string, @Param('instanceId') instanceId: string) {
-    return this.dossierService.findAllByInstanceByType(type, +instanceId);
-  }
+  // @Get('instance/:instanceId/type/:type')
+  // findAllByInstanceByType(@Param('type') type: string, @Param('instanceId') instanceId: string) {
+  //   return this.dossierService.findAllByInstanceByType(type, +instanceId);
+  // }
   @UseGuards(RolesGuard)
   @Roles(UserRole.User)
   @Get('instance/matricule/:matricule/type/:type')

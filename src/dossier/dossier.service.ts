@@ -1,8 +1,17 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Chronologie, Dossier, Instance, Prisma, TypeDossier, typeInstance } from '@prisma/client';
-import { log } from 'console';
+import { count, countReset, log } from 'console';
+export interface CountResult{
+  matricule:string,
+  ccEncours:number,
+  depEncours:number,
+  ccInstance:number,
+  depInstance:number,
+  ccHorsDL:number,
+  depHorsDL:number
 
+};
 @Injectable()
 export class DossierService {
  
@@ -18,6 +27,116 @@ export class DossierService {
         Chronologies:true
       }
     });
+  }
+  async countAllByMatricule(matricule:string) {
+    let countResult={} as CountResult;
+
+    countResult.ccEncours = await this.prismaService.dossier.count({
+      where: {
+        AND: [
+          { 
+            matPresident: matricule,
+            type: TypeDossier.CCharges,
+            archive: false
+           },
+        ],
+      }
+      });
+      countResult.depEncours = await this.prismaService.dossier.count({
+      where: {
+        AND: [
+          { 
+            matPresident: matricule,
+            type: TypeDossier.Depouillement,
+            archive: false
+           },
+        ],
+      }
+      });
+      countResult.ccHorsDL = await this.prismaService.dossier.count({
+      where: {
+        AND: [
+          { 
+            matPresident: matricule,
+            type: TypeDossier.CCharges,
+            archive: false,
+            dateLimite: {
+              lt: new Date()
+            }
+            },
+        ],
+      }
+      });
+      countResult.depHorsDL = await this.prismaService.dossier.count({
+      where: {
+        AND: [
+          { 
+            matPresident: matricule,
+            type: TypeDossier.Depouillement,
+            archive: false,
+            dateLimite: {
+              lt: new Date()
+            }
+            },
+        ],
+      }
+      });
+
+      const cadre = await this.prismaService.cadre.findFirst({
+        where: {
+          MAT_PERS: { startsWith:matricule}
+        },
+        select: {
+          id: true,
+        }
+      });
+      Logger.debug("cadre", cadre);
+      const idCadre = cadre.id;
+      countResult.ccInstance = await this.prismaService.dossier.count({
+        where: {
+          AND: [
+            { type: TypeDossier.CCharges, archive: false },
+            {
+              Chronologies: {
+                some: {
+                  traite: false,
+                  instance: {
+                    membres: {
+                      some: { idCadre: idCadre },
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        }
+      });
+
+      countResult.depInstance = await this.prismaService.dossier.count({
+        where: {
+          AND: [
+            { type: TypeDossier.Depouillement, archive: false },
+            {
+              Chronologies: {
+                some: {
+                  traite: false,
+                  instance: {
+                    membres: {
+                      some: { idCadre: idCadre },
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        }
+      });
+    
+
+        
+      Logger.debug("result: ", countResult);
+      return countResult;
+      
   }
   async findAllByType(type: string) {
     // Convert the string to the enum type
