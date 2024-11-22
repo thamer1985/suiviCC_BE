@@ -53,34 +53,63 @@ export class DossierService {
         ],
       }
       });
-      countResult.ccHorsDL = await this.prismaService.dossier.count({
-      where: {
-        AND: [
-          { 
-            matPresident: matricule,
-            type: TypeDossier.CCharges,
-            archive: false,
-            dateLimite: {
-              lt: new Date()
-            }
+
+      const today = new Date();
+      let cc=0;
+      const ccList = await this.prismaService.dossier.findMany({
+        where: {
+          matPresident: matricule,
+          type: TypeDossier.CCharges,
+          archive: false,
+        },
+        select: {
+          Chronologies: {
+            orderBy: {
+              id: 'desc'
             },
-        ],
-      }
+            take: 1
+          }
+        }
       });
-      countResult.depHorsDL = await this.prismaService.dossier.count({
-      where: {
-        AND: [
-          { 
-            matPresident: matricule,
-            type: TypeDossier.Depouillement,
-            archive: false,
-            dateLimite: {
-              lt: new Date()
-            }
+      ccList.forEach(dossier => {
+        const lastChronologie = dossier.Chronologies[0];        
+        if (lastChronologie && lastChronologie.dateLimite < today) {
+          cc++;
+        }
+      });
+
+      Logger.debug("cc", cc);
+      countResult.ccHorsDL=cc;
+      
+      
+
+      let dep=0;
+      const depList = await this.prismaService.dossier.findMany({
+        where: {
+          matPresident: matricule,
+          type: TypeDossier.Depouillement,
+          archive: false,
+        },
+        include: {
+          Chronologies: {
+            orderBy: {
+              id: 'desc'
             },
-        ],
-      }
+            take: 1
+          }
+        }
       });
+      depList.forEach(dossier => {
+        const lastChronologie = dossier.Chronologies[0];        
+        if (lastChronologie && lastChronologie.dateLimite < today) {
+          dep++;
+        }
+      });
+
+      Logger.debug("dep", dep);
+      countResult.depHorsDL=dep;
+
+      // Instance
 
       const cadre = await this.prismaService.cadre.findFirst({
         where: {
@@ -161,32 +190,58 @@ export class DossierService {
         ],
       }
       });
-      countResult.ccHorsDL = await this.prismaService.dossier.count({
-      where: {
-        AND: [
-          { 
-            type: TypeDossier.CCharges,
-            archive: false,
-            dateLimite: {
-              lt: new Date()
-            }
+            const today = new Date();
+      let cc=0;
+      const ccList = await this.prismaService.dossier.findMany({
+        where: {
+          type: TypeDossier.CCharges,
+          archive: false,
+        },
+        select: {
+          Chronologies: {
+            orderBy: {
+              id: 'desc'
             },
-        ],
-      }
+            take: 1
+          }
+        }
       });
-      countResult.depHorsDL = await this.prismaService.dossier.count({
-      where: {
-        AND: [
-          { 
-            type: TypeDossier.Depouillement,
-            archive: false,
-            dateLimite: {
-              lt: new Date()
-            }
+      ccList.forEach(dossier => {
+        const lastChronologie = dossier.Chronologies[0];        
+        if (lastChronologie && lastChronologie.dateLimite < today) {
+          cc++;
+        }
+      });
+
+      Logger.debug("cc", cc);
+      countResult.ccHorsDL=cc;
+      
+      
+
+      let dep=0;
+      const depList = await this.prismaService.dossier.findMany({
+        where: {
+          type: TypeDossier.Depouillement,
+          archive: false,
+        },
+        include: {
+          Chronologies: {
+            orderBy: {
+              id: 'desc'
             },
-        ],
-      }
+            take: 1
+          }
+        }
       });
+      depList.forEach(dossier => {
+        const lastChronologie = dossier.Chronologies[0];        
+        if (lastChronologie && lastChronologie.dateLimite < today) {
+          dep++;
+        }
+      });
+
+      Logger.debug("dep", dep);
+      countResult.depHorsDL=dep;
 
       const cadre = await this.prismaService.cadre.findFirst({
         where: {
