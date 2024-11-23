@@ -9,8 +9,8 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
@@ -23,6 +23,7 @@ model Dossier {
   dateLimite         DateTime
   dateLimiteOffres   DateTime? // Date maintien des offres (spécifique aux dépouillements)
   matPresident       String
+  matCreateur        String
   nomPrenomPresident String
   numDami            String?
   importance         Importance    @default(Normal)
@@ -32,7 +33,8 @@ model Dossier {
   Chronologies       Chronologie[]
   instance           Instance?     @relation(fields: [instanceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   instanceId         Int?          @unique
-  @@index([id,type,archive])
+
+  @@index([id, type, archive])
 }
 
 enum Importance {
@@ -45,6 +47,7 @@ enum Importance {
 enum TypeDossier {
   CCharges
   Depouillement
+  Contrat
 }
 
 model Chronologie {
@@ -56,24 +59,29 @@ model Chronologie {
   commentaire  String?
   dateLimite   DateTime
 
-  idDossier    Int
-  dossier      Dossier   @relation(fields: [idDossier], references: [id])
-  idInstance   Int
-  instance     Instance  @relation(fields: [idInstance], references: [id])
+  idDossier  Int
+  dossier    Dossier  @relation(fields: [idDossier], references: [id])
+  idInstance Int
+  instance   Instance @relation(fields: [idInstance], references: [id])
+
   @@index([id])
 }
 
 model Instance {
-  id           Int           @id @default(autoincrement())
-  libelle      String
-  rang         Int
-  delai        Int
-  matPresident String?
-  type         typeInstance  @default(Standard)
-  Chronologies Chronologie[]
-  membres      Membre[]
-  dossier      Dossier?
-  @@index([id,type])
+  id                 Int           @id @default(autoincrement())
+  libelle            String
+  rang               Int
+  delai              Int
+  delaiImportant     Int?
+  delaiTresImportant Int?
+  delaiVital         Int?
+  matPresident       String?
+  type               typeInstance  @default(Standard)
+  Chronologies       Chronologie[]
+  membres            Membre[]
+  dossier            Dossier?
+
+  @@index([id, type])
 }
 
 enum typeInstance {

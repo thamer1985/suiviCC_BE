@@ -2,6 +2,8 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Chronologie, Dossier, Instance, Prisma, TypeDossier, typeInstance } from '@prisma/client';
 import { count, countReset, log } from 'console';
+import { PrismaGeneralService } from 'src/prisma_general/prisma_general.service';
+import { UserRole } from 'src/auth/constants';
 export interface CountResult{
   matricule:string,
   ccEncours:number,
@@ -17,7 +19,7 @@ export class DossierService {
  
 
   constructor(
-    private prismaService: PrismaService
+    private prismaService: PrismaService,private prismaGeneralService: PrismaGeneralService
   ) {}
  
 
@@ -521,9 +523,81 @@ export class DossierService {
         dateLimite: dossier.dateLimite,
       }
     })
+    //check if userExistin General DB 
+    const userRole = await this.getUserRole(createDossierDto.matPresident);
+    console.log("UserRole: ", userRole);
+    if(!userRole){
+      await this.addUserRole(createDossierDto.matPresident);
+      Logger.debug("User added to the application");
+    }
+    
     return this.findOne(dossier.id);  
   }
-  
+  async addUserRole(matricule: string){
+    return this.prismaGeneralService.profil.create({
+      data: {
+        matricule: matricule,
+        id_application: 13,
+        profil: 'User'    
+      }
+    })
+  }
+
+  async getUserRole(matricule: string): Promise<UserRole> {
+    let userRole: UserRole = undefined;
+    //Get role
+    try {
+      const generalProfil = await this.prismaGeneralService.profil.findFirstOrThrow({
+        where:
+        {
+          AND: [
+            {
+              matricule: matricule
+            },
+            {
+              id_application: 13
+            }
+          ]
+        }
+      })
+      userRole = this.checkProfil(generalProfil);
+      console.log("Role: ", userRole);
+      return userRole;
+
+    } catch (error) {
+      return userRole;
+
+    }
+  }
+  checkProfil(generalProfil: { matricule: string; profil: string; id_application: number; last_access: Date | null; }): UserRole {
+    let userRole: UserRole = UserRole.User;
+    console.log("-------------- ", generalProfil.profil);
+
+    switch (generalProfil.profil) {
+      case 'SysAdmin':
+        Logger.debug(generalProfil, 'SysAdmin');
+        userRole = UserRole.SysAdmin
+        break;
+      case 'Admin':
+        Logger.debug(generalProfil, 'Admin');
+        userRole = UserRole.Admin
+        break;
+      case 'DG':
+        Logger.debug(generalProfil, 'DG');
+        userRole = UserRole.DG
+        break;
+      case 'User':
+        Logger.debug(generalProfil, 'User');
+        userRole = UserRole.User;
+        break;
+
+      default:
+        userRole = UserRole.User;
+        break;
+    }
+    return userRole;
+
+  }
   
   async patch(id: number, updateDossierDto: Prisma.DossierUpdateInput) {
     

@@ -35,7 +35,7 @@ export class DossierController {
   //   return this.dossierService.findAllByInstanceByType(type, +instanceId);
   // }
   @UseGuards(RolesGuard)
-  @Roles(UserRole.User)
+  // @Roles(UserRole.User)
   @Get('instance/matricule/:matricule/type/:type')
   getDossiersForCadreGroupedByInstance(@Param('type') type: string, @Param('matricule') matricule: string) {
     return this.dossierService.getDossiersForCadreGroupedByInstance(matricule,type );
