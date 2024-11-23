@@ -42,10 +42,17 @@ export class DossierController {
   }
   @UseGuards(RolesGuard)
   @Roles(UserRole.Admin,UserRole.SysAdmin,UserRole.DG)
-  @Get('admin/matPresident/:matPresident/type/:type/archived/:archived')
-  getAllDossiersByType(@Param('type') type: string, @Param('matPresident') matPresident: string, @Param('archived') archived: string) {
+  @Get('dg/type/:type/archived/:archived')
+  getAllDossiersByType(@Param('type') type: string, @Param('archived') archived: string) {
    const _archived = archived == 'true' ? true : false
-    return this.dossierService.getAllDossiersByType(matPresident,type,_archived );
+    return this.dossierService.getAllDossiersByType(type,_archived );
+  }
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.Admin,UserRole.SysAdmin,UserRole.DG)
+  @Get('admin/matCreateur/:matCreateur/type/:type/archived/:archived')
+  getAdminDossiersByType(@Param('type') type: string, @Param('matCreateur') matCreateur: string, @Param('archived') archived: string) {
+   const _archived = archived == 'true' ? true : false
+    return this.dossierService.getAdminDossiersByType(matCreateur,type,_archived );
   }
   @Get('matPresident/:matPresident/type/:type/archived/:archived')
   getDossiersByCadreAndType(@Param('type') type: string, @Param('matPresident') matPresident: string, @Param('archived') archived: string) {

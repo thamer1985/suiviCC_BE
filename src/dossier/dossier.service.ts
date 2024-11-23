@@ -353,7 +353,35 @@ export class DossierService {
      
   }
 
-  async getAllDossiersByType(matPresident: string, typeDossier: string,archived: boolean) {
+  async getAdminDossiersByType(matCreateur: string, typeDossier: string,archived: boolean) {
+    const typeDossierEnum = TypeDossier[typeDossier as keyof typeof TypeDossier];
+    let dossiers:Dossier[];
+    if (!typeDossierEnum) {
+      throw new BadRequestException('Invalid typeDossier');
+    }
+  
+      dossiers = await this.prismaService.dossier.findMany({
+        where: {
+          AND: [
+            { type: typeDossierEnum,
+              matCreateur: matCreateur,
+              archive: archived
+             },
+          ],
+        },
+        include: {
+          Chronologies: {
+            orderBy: {
+              dateEnvoi: 'asc',
+            }
+          }, instance:true
+        },
+        });
+    
+    
+    return dossiers;
+  }
+  async getAllDossiersByType(typeDossier: string,archived: boolean) {
     const typeDossierEnum = TypeDossier[typeDossier as keyof typeof TypeDossier];
     let dossiers:Dossier[];
     if (!typeDossierEnum) {
