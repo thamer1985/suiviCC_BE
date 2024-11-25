@@ -26,7 +26,7 @@ model Dossier {
   matCreateur        String
   nomPrenomPresident String
   numDami            String?
-  importance         Importance    @default(Normal)
+  importance         Importance    @default(Basique)
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
   archive            Boolean       @default(false)
@@ -38,7 +38,7 @@ model Dossier {
 }
 
 enum Importance {
-  Normal
+  Basique
   Important
   TresImportant
   Vital

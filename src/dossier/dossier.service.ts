@@ -14,6 +14,12 @@ export interface CountResult{
   depHorsDL:number
 
 };
+type DossierWithChronologies = Prisma.DossierGetPayload<{
+  include: { Chronologies: true; instance: true }
+}>;
+
+const importanceOrder = ['Normal', 'Important', 'TresImportant', 'Vital'];
+
 @Injectable()
 export class DossierService {
  
@@ -372,23 +378,28 @@ export class DossierService {
         include: {
           Chronologies: {
             orderBy: {
-              dateEnvoi: 'asc',
-            }
+              dateLimite: 'desc',
+            },
+            take:1,
           }, instance:true
+        },
+        orderBy: {
+          importance: 'desc'
         },
         });
     
     
     return dossiers;
   }
+  
   async getAllDossiersByType(typeDossier: string,archived: boolean) {
     const typeDossierEnum = TypeDossier[typeDossier as keyof typeof TypeDossier];
-    let dossiers:Dossier[];
+    let dossiers:DossierWithChronologies[];
     if (!typeDossierEnum) {
       throw new BadRequestException('Invalid typeDossier');
     }
   
-      dossiers = await this.prismaService.dossier.findMany({
+      dossiers= await this.prismaService.dossier.findMany({
         where: {
           AND: [
             { type: typeDossierEnum,
@@ -399,14 +410,47 @@ export class DossierService {
         include: {
           Chronologies: {
             orderBy: {
-              dateEnvoi: 'asc',
-            }
+              dateLimite: 'desc',
+            },
+            take:1,
           }, instance:true
         },
+        orderBy: {
+          importance: 'desc'
+        },
         });
+
     
-    
-    return dossiers;
+        // const sortedDossiers = dossiers.sort((a, b) => {
+        //   if (a.importance !== b.importance) {
+        //     return b.importance.localeCompare(a.importance); // 'desc' order
+        //   }
+        //   const aDate = a.Chronologies[0]?.dateLimite;
+        //   const bDate = b.Chronologies[0]?.dateLimite;
+        //   if (aDate && bDate) {
+        //     return aDate.getTime() - bDate.getTime(); // 'asc' order
+        //   }
+        //   return 0;
+        // });
+      
+  // Custom sorting function
+        // const sortedDossiers = dossiers.sort((a, b) => {
+        //   // Sort by importance index
+        //   const importanceA = importanceOrder.indexOf(a.importance);
+        //   const importanceB = importanceOrder.indexOf(b.importance);
+        //   if (importanceA !== importanceB) {
+        //     return importanceB - importanceA; // Descending order
+        //   }
+          
+        //   // If importance is the same, sort by the latest Chronologie's dateLimite
+        //   const aDate = a.Chronologies[0]?.dateLimite;
+        //   const bDate = b.Chronologies[0]?.dateLimite;
+        //   if (aDate && bDate) {
+        //     return aDate.getTime() - bDate.getTime(); // Ascending order
+        //   }
+        //   return 0;
+        // });
+        return dossiers;
   }
   async getDossiersByCadreAndType(matPresident: string, typeDossier: string,archived: boolean) {
     const typeDossierEnum = TypeDossier[typeDossier as keyof typeof TypeDossier];
@@ -427,9 +471,13 @@ export class DossierService {
         include: {
           Chronologies: {
             orderBy: {
-              dateEnvoi: 'asc',
-            }
+              dateLimite: 'desc',
+            },
+            take:1,
           }, instance:true
+        },
+        orderBy: {
+          importance: 'desc'
         },
         });
     
@@ -475,13 +523,16 @@ export class DossierService {
       include: {
         Chronologies: {
           orderBy: {
-            dateEnvoi: 'asc',
+            dateLimite: 'desc',
           },
           where: {
             traite: false,
           },
         },
       },
+      orderBy: {
+        importance: 'desc',
+      },  
     });
   
     Logger.debug("dossiers:", dossiers);
