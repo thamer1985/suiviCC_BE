@@ -691,6 +691,9 @@ export class DossierService {
             type: typeInstance.Commission,
             matPresident: createDossierDto.matPresident,
             delai: 10,
+            delaiImportant:9,
+            delaiTresImportant:8,
+            delaiVital:7,
             rang: 0,
           }
         }
