@@ -21,9 +21,13 @@ export class DossierController {
   CountAllByMatricule(@Param('matricule') matricule: string) {
     return this.dossierService.countAllByMatricule(matricule);
   }
-  @Get('admin/count/matricule/:matricule')
-  CountAllByMatriculeForAdmin(@Param('matricule') matricule: string) {
-    return this.dossierService.CountAllByMatriculeForAdmin(matricule);
+  @Get('dg/count/matricule/:matricule')
+  CountAllByMatriculeForDG(@Param('matricule') matricule: string) {
+    return this.dossierService.CountAllByMatriculeForDG(matricule);
+  }
+  @Get('admin/count/matCreateur/:matCreateur')
+  CountAllByMatriculeForAdmin(@Param('matCreateur') matCreateur: string) {
+    return this.dossierService.CountAllByMatriculeForAdmin(matCreateur);
   }
   
   @Get('type/:type')
@@ -48,7 +52,7 @@ export class DossierController {
     return this.dossierService.getAllDossiersByType(type,_archived );
   }
   @UseGuards(RolesGuard)
-  @Roles(UserRole.Admin,UserRole.SysAdmin,UserRole.DG)
+  @Roles(UserRole.Admin)
   @Get('admin/matCreateur/:matCreateur/type/:type/archived/:archived')
   getAdminDossiersByType(@Param('type') type: string, @Param('matCreateur') matCreateur: string, @Param('archived') archived: string) {
    const _archived = archived == 'true' ? true : false

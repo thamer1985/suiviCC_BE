@@ -175,7 +175,143 @@ export class DossierService {
       return countResult;
       
   }
-  async CountAllByMatriculeForAdmin(matricule:string) {
+  async CountAllByMatriculeForAdmin(matCreateur:string) {
+    let countResult={} as CountResult;
+
+    countResult.ccEncours = await this.prismaService.dossier.count({
+      where: {
+        AND: [
+          { 
+            matCreateur:matCreateur,
+            type: TypeDossier.CCharges,
+            archive: false
+           },
+        ],
+      }
+      });
+      countResult.depEncours = await this.prismaService.dossier.count({
+      where: {
+        AND: [
+          { 
+            matCreateur:matCreateur,
+            type: TypeDossier.Depouillement,
+            archive: false
+           },
+        ],
+      }
+      });
+            const today = new Date();
+      let cc=0;
+      const ccList = await this.prismaService.dossier.findMany({
+        where: {
+          matCreateur:matCreateur,
+          type: TypeDossier.CCharges,
+          archive: false,
+        },
+        select: {
+          Chronologies: {
+            orderBy: {
+              id: 'desc'
+            },
+            take: 1
+          }
+        }
+      });
+      ccList.forEach(dossier => {
+        const lastChronologie = dossier.Chronologies[0];        
+        if (lastChronologie && lastChronologie.dateLimite < today) {
+          cc++;
+        }
+      });
+
+      Logger.debug("cc", cc);
+      countResult.ccHorsDL=cc;
+      
+      
+
+      let dep=0;
+      const depList = await this.prismaService.dossier.findMany({
+        where: {
+          matCreateur:matCreateur,
+          type: TypeDossier.Depouillement,
+          archive: false,
+        },
+        include: {
+          Chronologies: {
+            orderBy: {
+              id: 'desc'
+            },
+            take: 1
+          }
+        }
+      });
+      depList.forEach(dossier => {
+        const lastChronologie = dossier.Chronologies[0];        
+        if (lastChronologie && lastChronologie.dateLimite < today) {
+          dep++;
+        }
+      });
+
+      Logger.debug("dep", dep);
+      countResult.depHorsDL=dep;
+
+      const cadre = await this.prismaService.cadre.findFirst({
+        where: {
+          MAT_PERS: { startsWith:matCreateur}
+        },
+        select: {
+          id: true,
+        }
+      });
+      Logger.debug("cadre", cadre);
+      const idCadre = cadre.id;
+      countResult.ccInstance = await this.prismaService.dossier.count({
+        where: {
+          AND: [
+            { type: TypeDossier.CCharges, archive: false },
+            {
+              Chronologies: {
+                some: {
+                  traite: false,
+                  instance: {
+                    membres: {
+                      some: { idCadre: idCadre },
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        }
+      });
+
+      countResult.depInstance = await this.prismaService.dossier.count({
+        where: {
+          AND: [
+            { type: TypeDossier.Depouillement, archive: false },
+            {
+              Chronologies: {
+                some: {
+                  traite: false,
+                  instance: {
+                    membres: {
+                      some: { idCadre: idCadre },
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        }
+      });
+    
+
+        
+      Logger.debug("result: ", countResult);
+      return countResult;
+      
+  }
+  async CountAllByMatriculeForDG(matricule:string) {
     let countResult={} as CountResult;
 
     countResult.ccEncours = await this.prismaService.dossier.count({
@@ -420,36 +556,7 @@ export class DossierService {
         },
         });
 
-    
-        // const sortedDossiers = dossiers.sort((a, b) => {
-        //   if (a.importance !== b.importance) {
-        //     return b.importance.localeCompare(a.importance); // 'desc' order
-        //   }
-        //   const aDate = a.Chronologies[0]?.dateLimite;
-        //   const bDate = b.Chronologies[0]?.dateLimite;
-        //   if (aDate && bDate) {
-        //     return aDate.getTime() - bDate.getTime(); // 'asc' order
-        //   }
-        //   return 0;
-        // });
-      
-  // Custom sorting function
-        // const sortedDossiers = dossiers.sort((a, b) => {
-        //   // Sort by importance index
-        //   const importanceA = importanceOrder.indexOf(a.importance);
-        //   const importanceB = importanceOrder.indexOf(b.importance);
-        //   if (importanceA !== importanceB) {
-        //     return importanceB - importanceA; // Descending order
-        //   }
-          
-        //   // If importance is the same, sort by the latest Chronologie's dateLimite
-        //   const aDate = a.Chronologies[0]?.dateLimite;
-        //   const bDate = b.Chronologies[0]?.dateLimite;
-        //   if (aDate && bDate) {
-        //     return aDate.getTime() - bDate.getTime(); // Ascending order
-        //   }
-        //   return 0;
-        // });
+
         return dossiers;
   }
   async getDossiersByCadreAndType(matPresident: string, typeDossier: string,archived: boolean) {
@@ -583,7 +690,7 @@ export class DossierService {
             libelle: _libelle,
             type: typeInstance.Commission,
             matPresident: createDossierDto.matPresident,
-            delai: 30,
+            delai: 10,
             rang: 0,
           }
         }
