@@ -571,7 +571,11 @@ export class DossierService {
           AND: [
             { type: typeDossierEnum ,archive:archived},
             {
-              matPresident: matPresident
+              OR: [
+                {matPresident: matPresident},
+                {matCreateur: matPresident}
+              ]
+              
             },
           ],
         },

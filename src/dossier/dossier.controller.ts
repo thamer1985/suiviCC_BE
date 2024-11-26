@@ -21,15 +21,15 @@ export class DossierController {
   CountAllByMatricule(@Param('matricule') matricule: string) {
     return this.dossierService.countAllByMatricule(matricule);
   }
-  @Get('dg/count/matricule/:matricule')
-  CountAllByMatriculeForDG(@Param('matricule') matricule: string) {
-    return this.dossierService.CountAllByMatriculeForDG(matricule);
-  }
   @Get('admin/count/matCreateur/:matCreateur')
   CountAllByMatriculeForAdmin(@Param('matCreateur') matCreateur: string) {
     return this.dossierService.CountAllByMatriculeForAdmin(matCreateur);
   }
   
+  @Get('dg/count/matricule/:matricule')
+  CountAllByMatriculeForDG(@Param('matricule') matricule: string) {
+    return this.dossierService.CountAllByMatriculeForDG(matricule);
+  }
   @Get('type/:type')
   findAllByType(@Param('type') type: string) {
     return this.dossierService.findAllByType(type);
