@@ -182,10 +182,15 @@ export class DossierService {
       where: {
         AND: [
           { 
-            matCreateur:matCreateur,
             type: TypeDossier.CCharges,
             archive: false
            },
+           {
+            OR: [
+              {matCreateur: matCreateur},
+              {matPresident: matCreateur},
+            ]
+          }
         ],
       }
       });
@@ -193,10 +198,15 @@ export class DossierService {
       where: {
         AND: [
           { 
-            matCreateur:matCreateur,
             type: TypeDossier.Depouillement,
             archive: false
            },
+            {
+              OR: [
+                {matCreateur: matCreateur},
+                {matPresident: matCreateur},
+              ]
+            }
         ],
       }
       });
@@ -204,7 +214,10 @@ export class DossierService {
       let cc=0;
       const ccList = await this.prismaService.dossier.findMany({
         where: {
-          matCreateur:matCreateur,
+          OR: [
+            {matCreateur: matCreateur},
+            {matPresident: matCreateur},
+          ],
           type: TypeDossier.CCharges,
           archive: false,
         },
@@ -232,7 +245,10 @@ export class DossierService {
       let dep=0;
       const depList = await this.prismaService.dossier.findMany({
         where: {
-          matCreateur:matCreateur,
+          OR: [
+            {matCreateur: matCreateur},
+            {matPresident: matCreateur},
+          ],
           type: TypeDossier.Depouillement,
           archive: false,
         },
@@ -506,9 +522,14 @@ export class DossierService {
         where: {
           AND: [
             { type: typeDossierEnum,
-              matCreateur: matCreateur,
               archive: archived
-             },
+            },
+            {
+              OR: [
+                {matCreateur: matCreateur},
+                {matPresident: matCreateur},
+              ]
+            }
           ],
         },
         include: {
