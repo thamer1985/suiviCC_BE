@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "gg": "npx prisma generate --schema ./prisma_general/schema_general.prisma",
-    "build": "nest build && npm run copy && npm run node_modules:prod",
+    "buildforprod": "nest build && npm run copy && npm run node_modules:prod",
     "copy": "copy \"package.json\" \"dist/\"",
     "node_modules:prod": "cd dist && npm install --only=production",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",

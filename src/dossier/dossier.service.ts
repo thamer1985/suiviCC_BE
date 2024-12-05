@@ -535,9 +535,8 @@ export class DossierService {
         include: {
           Chronologies: {
             orderBy: {
-              dateLimite: 'desc',
-            },
-            take:1,
+              dateEnvoi: 'asc',
+            }
           }, instance:true
         },
         orderBy: {
@@ -556,6 +555,7 @@ export class DossierService {
       throw new BadRequestException('Invalid typeDossier');
     }
   
+    Logger.debug("getAllDossiersByType", typeDossier);
       dossiers= await this.prismaService.dossier.findMany({
         where: {
           AND: [
@@ -567,7 +567,7 @@ export class DossierService {
         include: {
           Chronologies: {
             orderBy: {
-              dateLimite: 'desc',
+              dateEnvoi: 'desc',
             },
             take:1,
           }, instance:true
@@ -603,9 +603,8 @@ export class DossierService {
         include: {
           Chronologies: {
             orderBy: {
-              dateLimite: 'desc',
-            },
-            take:1,
+              dateEnvoi: 'asc',
+            }
           }, instance:true
         },
         orderBy: {

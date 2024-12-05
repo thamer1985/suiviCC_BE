@@ -44,7 +44,12 @@ return instances;
     return this.prismaService.instance.findMany({
       where: {
         type: typeInstance.Standard
-      }
+      
+      },
+      orderBy: {
+        rang: 'asc',
+        
+      },
       });
   }
   findAllCommisionInstance() {
