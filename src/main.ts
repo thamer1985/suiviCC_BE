@@ -8,10 +8,15 @@ import * as cookieParser from 'cookie-parser';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   
+    // Middleware to add headers
+    // app.use((req, res, next) => {
+    //   res.setHeader('Access-Control-Allow-Private-Network', 'true');
+    //   next();
+    // });
   // Some Configuration for API (Not about Swagger)
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ extended: true, limit: '50mb' }));
-  app.useStaticAssets(join(__dirname, '..', 'uploads'));
+  app.useStaticAssets(join(__dirname, '..', 'uploads'));  
   app.enableCors({
     origin: ['http://localhost:4202', 'http://10.76.100.50:4202','http://10.71.0.24:4202','http://10.71.0.24', 'http://ctim.cpg.com.tn'],
     credentials: true,

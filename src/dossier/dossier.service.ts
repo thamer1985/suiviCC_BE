@@ -845,6 +845,8 @@ export class DossierService {
     return lastChronologie;
   }
   async send(dossierId: number, chronologie: Chronologie) {
+    const today=new Date(Date.now())
+    let _dateLimite=new Date(Date.now());
     console.log(chronologie);
     const lastChronologie = await this.updateLastChronologie(dossierId);
     const dossier=await this.prismaService.dossier.findUnique({
@@ -854,6 +856,15 @@ export class DossierService {
         instance: true,
       } 
     })
+    const instance=await this.prismaService.instance.findUnique({
+      where: {
+        id: chronologie.idInstance,
+      }
+    })
+    _dateLimite.setDate(today.getDate()+instance.delai);
+    console.log(today);
+    console.log(_dateLimite);
+    
     Logger.debug(dossier,"dossier");
     await this.prismaService.dossier.update({
       where: {
@@ -868,10 +879,10 @@ export class DossierService {
               },
             },
             // idInstance: chronologie.id, 
-            dateEnvoi: chronologie.dateEnvoi,
+            dateEnvoi: today,
             traite: false, 
             commentaire: chronologie.commentaire,
-            dateLimite: chronologie.dateLimite,
+            dateLimite: _dateLimite,
             fromInstance:lastChronologie.instance.libelle
           },
         },
@@ -881,31 +892,6 @@ export class DossierService {
       }
     })
 
-    //  await this.prismaService.dossier.update({
-    //   where: {
-    //     id: dossierId, 
-    //   },
-    //   data: {
-    //     Chronologies: {
-    //       create: {
-    //         instance: {
-    //           connect: {
-    //             id: chronologie.idInstance, 
-    //           },
-    //         },
-    //         // idInstance: chronologie.id, 
-    //         dateEnvoi: chronologie.dateEnvoi,
-    //         traite: false, 
-    //         commentaire: chronologie.commentaire,
-    //         dateLimite: chronologie.dateLimite,
-    //       },
-    //     },
-    //   },
-    //   include: {
-    //     Chronologies: true,
-    //     // Instance: true, 
-    //   },
-    // })
     return this.findOne(dossierId);
       
     }
